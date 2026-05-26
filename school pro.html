@@ -1,0 +1,2208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrated School Management & Curriculum Ecosystem</title>
+    <style>
+        /* --- Core Theme & Variables --- */
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1e40af;
+            --secondary: #64748b;
+            --bg: #f1f5f9;
+            --white: #ffffff;
+            --border: #cbd5e1;
+            --dark-panel: #0f172a;
+            --success: #10b981;
+            --danger: #ef4444;
+            --purple: #6366f1;
+            --purple-dark: #4f46e5;
+            --amber: #f59e0b;
+            --amber-dark: #b45309;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        }
+
+        html, body {
+            background-color: var(--bg);
+            color: #1e293b;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* --- MOBILE RESPONSIVE UTILITIES & LAYOUTS --- */
+        @media (max-width: 1024px) {
+            html, body {
+                overflow: auto;
+                height: auto;
+            }
+        }
+
+        /* --- 1. STATIC INSTITUTIONAL TOP BANNER --- */
+        .frozen-master-header {
+            flex-shrink: 0;
+            width: 100%;
+            background: var(--dark-panel);
+            color: var(--white);
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 3px solid var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            z-index: 200;
+        }
+
+        .frozen-master-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+
+        .frozen-master-header p {
+            color: #94a3b8;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+
+        .global-clock-input {
+            padding: 6px 10px;
+            border: 1px solid #334155;
+            background: #1e293b;
+            color: white;
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+        }
+
+        /* --- 2. NAVIGATION DECK BANNER --- */
+        .hover-nav-deck {
+            flex-shrink: 0;
+            width: 100%;
+            background: #e2e8f0;
+            display: flex;
+            overflow-x: auto;
+            border-bottom: 1px solid var(--border);
+            z-index: 190;
+            padding: 0;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .deck-btn {
+            flex: 0 0 auto;
+            padding: 14px 16px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 13px;
+            color: var(--secondary);
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            white-space: nowrap;
+            outline: none;
+        }
+
+        .deck-btn:hover {
+            color: var(--primary);
+            background-color: #f8fafc;
+        }
+
+        .deck-btn.active {
+            color: var(--primary);
+            background: var(--white);
+            border-bottom: 4px solid var(--primary);
+            box-shadow: inset 0 -2px 0px rgba(0,0,0,0.05);
+        }
+
+        /* --- 3. WORKSPACE VIEWPORT HUB --- */
+        .master-workspace-viewport {
+            flex-grow: 1;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            background-color: var(--bg);
+        }
+
+        @media (max-width: 1024px) {
+            .master-workspace-viewport {
+                overflow: visible;
+                height: auto;
+            }
+        }
+
+        .workspace-module {
+            display: none;
+            width: 100%;
+            height: 100%;
+            padding: 16px;
+            overflow: hidden;
+        }
+
+        .workspace-module.active {
+            display: flex;
+            flex-direction: column;
+        }
+
+        @media (max-width: 1024px) {
+            .workspace-module {
+                display: none;
+                height: auto;
+                overflow: visible;
+            }
+            .workspace-module.active {
+                display: flex;
+            }
+        }
+
+        /* --- Responsive Architecture Layouts --- */
+        .split-grid {
+            display: grid;
+            grid-template-columns: 380px 1fr;
+            gap: 16px;
+            height: 100%;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .split-grid {
+                grid-template-columns: 1fr;
+                height: auto;
+                overflow: visible;
+            }
+        }
+
+        .form-side-panel {
+            background: var(--white);
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+            overflow-y: auto;
+            height: 100%;
+        }
+
+        @media (max-width: 1024px) {
+            .form-side-panel {
+                height: auto;
+                overflow: visible;
+            }
+        }
+
+        .form-side-panel h2, .content-header h3 {
+            font-size: 13px;
+            color: var(--dark-panel);
+            margin-bottom: 16px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .ledger-side-area {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        @media (max-width: 1024px) {
+            .ledger-side-area {
+                height: auto;
+                overflow: visible;
+                margin-top: 16px;
+            }
+        }
+
+        .search-wrapper {
+            background: var(--white);
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-responsive {
+            flex-grow: 1;
+            overflow: auto;
+            background: var(--white);
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+        }
+
+        @media (max-width: 1024px) {
+            .table-responsive {
+                max-height: 500px;
+            }
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            margin-bottom: 12px;
+            text-align: center;
+            align-items: center;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+            gap: 12px;
+            margin-bottom: 15px;
+            justify-content: center;
+        }
+
+        .full-width { grid-column: 1 / -1; width: 100%; }
+
+        label {
+            font-size: 10px;
+            font-weight: 700;
+            color: #475569;
+            text-transform: uppercase;
+            text-align: center;
+        }
+
+        input, select, textarea {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 13px;
+            outline: none;
+            width: 100%;
+            background: #fafafa;
+            text-align: center;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            border-color: var(--primary);
+            background: var(--white);
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            font-size: 13px;
+        }
+
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: var(--primary-dark); }
+        .btn-secondary { background: var(--secondary); color: white; }
+        .btn-secondary:hover { background: #475569; }
+
+        .centered-form-container {
+            max-width: 800px;
+            width: 100%;
+            margin: 0 auto;
+            background: var(--white);
+            padding: 24px;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
+            border: 1px solid var(--border);
+        }
+
+        .centered-form-container h2 {
+            font-size: 15px;
+            color: var(--dark-panel);
+            margin-bottom: 20px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            text-transform: uppercase;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        th {
+            background: #f8fafc;
+            color: #475569;
+            padding: 10px 12px;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            text-align: center;
+        }
+
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #f1f5f9;
+            text-align: center;
+        }
+
+        .status-btn, .status-pill, .status-pill-box {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+            font-size: 10px;
+            border: none;
+            cursor: pointer;
+            text-transform: uppercase;
+            display: inline-block;
+        }
+        .status-active, .status-complete { background: #dcfce7; color: #166534; }
+        .status-inactive, .status-pending { background: #fee2e2; color: #991b1b; }
+        .status-progress, .status-late { background: #fef3c7; color: #92400e; }
+        .status-holiday { background: #e0f2fe; color: #0369a1; }
+        .status-halfday { background: #fae8ff; color: #6b21a8; }
+
+        .dashboard-config-bar {
+            background: var(--white);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid var(--border);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .metrics-grid-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .metric-card-node {
+            background: var(--white);
+            padding: 12px 16px;
+            border-radius: 8px;
+            border-left: 5px solid var(--primary);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .metric-card-node.alt-variant { border-left-color: var(--success); }
+        .metric-card-node h3 { font-size: 11px; text-transform: uppercase; color: var(--secondary); font-weight: 600; }
+        .metric-card-node .value { font-size: 20px; font-weight: 700; color: var(--dark-panel); }
+
+        .radio-group {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            cursor: pointer;
+            margin-right: 6px;
+            font-weight: 600;
+            font-size: 12px;
+            justify-content: center;
+        }
+
+        .sticky-col-id { position: sticky; left: 0; background: var(--white); z-index: 6; font-weight: bold; width: 80px; text-align: center; }
+        .sticky-col-name { position: sticky; left: 80px; background: var(--white); z-index: 6; font-weight: 600; text-align: center; }
+        th.sticky-col-id, th.sticky-col-name { background: #f8fafc; z-index: 7; }
+        
+        .total-sticky-col { position: sticky; right: 0; background: #f8fafc; font-weight: bold; z-index: 6; border-left: 2px solid var(--border); width: 100px; text-align: center; color: var(--primary); }
+        th.total-sticky-col { background: #edf2f7; z-index: 7; }
+
+        .fee-amt-tag { padding: 4px; border-radius: 4px; font-size: 11px; font-weight: 600; text-align: center; display: block; }
+        .fee-full { background: #d1fae5; color: #065f46; }
+        .fee-partial { background: #fef3c7; color: #92400e; }
+
+        .modal-overlay-view {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(15, 23, 42, 0.6);
+            display: none;
+            align-items: center; justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-box-ticket {
+            background: var(--white);
+            width: 600px;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+            display: flex;
+            flex-direction: column;
+            max-height: 90vh;
+        }
+
+        .ticket-view-pane {
+            border: 1px solid var(--border);
+            padding: 20px;
+            background: #fafafa;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            overflow-y: auto;
+            flex-grow: 1;
+        }
+
+        .inner-sub-tabs {
+            display: flex;
+            background: #f1f5f9;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 12px;
+            border-radius: 6px;
+            overflow-x: auto;
+            flex-shrink: 0;
+            scrollbar-width: none;
+        }
+        .inner-sub-tabs::-webkit-scrollbar { display: none; }
+        .sub-tab-btn {
+            flex: 1; padding: 10px; border: none; background: none; cursor: pointer; font-weight: 600; color: var(--secondary); text-align: center; font-size: 12px; white-space: nowrap;
+        }
+        .sub-tab-btn.active {
+            background: var(--white); color: var(--primary); font-weight: 700;
+        }
+
+        /* --- MODULE 6 ARCHITECTURE SCHEMES CSS --- */
+        .syllabus-text { white-space: pre-line; word-break: break-word; line-height: 1.5; color: #0f172a; font-size: 13px; }
+        .placeholder-text { color: #94a3b8; font-style: italic; }
+        .macro-grid-view { display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 18px; padding: 5px; }
+        .macro-card { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 16px; box-shadow: 0 2px 4px rgba(0,0,0,0.02); border-top: 4px solid var(--amber); }
+        .macro-card h4 { font-size: 15px; color: var(--amber-dark); margin-bottom: 5px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+        .macro-meta { font-size: 12px; color: var(--secondary); margin-bottom: 6px; font-weight: 600; }
+        .syllabus-block-heading { font-weight: 700; color: var(--dark-panel); font-size: 11px; text-transform: uppercase; margin-bottom: 4px; margin-top: 8px; letter-spacing: 0.3px; }
+        .print-document-block { border-bottom: 2px dashed #cbd5e1; margin-bottom: 20px; padding-bottom: 18px; }
+        .print-document-block:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+
+        .timeline-container {
+            margin-top: 10px;
+            border-left: 2px solid var(--border);
+            padding-left: 12px;
+        }
+        .timeline-node {
+            position: relative;
+            margin-bottom: 10px;
+            font-size: 12px;
+        }
+        .timeline-node::before {
+            content: '';
+            position: absolute;
+            left: -17px;
+            top: 4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--amber);
+        }
+
+        @media (max-width: 768px) {
+            body {
+                height: auto;
+                overflow-y: auto;
+            }
+            
+            .master-workspace-viewport {
+                height: auto;
+                overflow-x: hidden;
+            }
+
+            .table-responsive {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .split-grid {
+                display: flex;
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. FIXED TOP MASTER BANNER -->
+    <header class="frozen-master-header">
+        <div>
+            <h1 id="globalSchoolHeader">BR International School Workspace Matrix</h1>
+            <p>Unified Central Institutional Management, Accounts Ledger & Daily Operations Registry</p>
+        </div>
+        <div>
+            <input type="date" id="globalMasterSystemClock" class="global-clock-input" onchange="syncGlobalClockAcrossModules()">
+        </div>
+    </header>
+
+    <!-- 2. NAVIGATION DECK BANNER -->
+    <nav class="hover-nav-deck">
+        <button class="deck-btn active" onclick="switchPrimaryModule(event, 'mod_admission_directory')">👤 Onboarding & Directory Master</button>
+        <button class="deck-btn" onclick="switchPrimaryModule(event, 'mod_student_attendance')">📝 Daily Attendance Portal</button>
+        <button class="deck-btn" onclick="switchPrimaryModule(event, 'mod_student_fees')">₹ Accounts: Student Fee Matrix</button>
+        <button class="deck-btn" onclick="switchPrimaryModule(event, 'mod_teacher_payroll')">💼 HR: Personnel Payroll Ledger</button>
+        <button class="deck-btn" onclick="switchPrimaryModule(event, 'mod_teacher_activities')">📊 Daily Lesson Execution Logs</button>
+        <button class="deck-btn" onclick="switchPrimaryModule(event, 'mod_syllabus_curriculum')" style="color: var(--amber-dark);">📚 Syllabus & Blueprint Matrix</button>
+    </nav>
+
+    <!-- 3. DYNAMIC WORKSPACE VIEWPORT HUB -->
+    <main class="master-workspace-viewport">
+
+        <!-- MODULE 1: STUDENT & TEACHER ADMISSION AND MASTER DIRECTORY -->
+        <section id="mod_admission_directory" class="workspace-module active">
+            <div class="inner-sub-tabs">
+                <button class="sub-tab-btn active" onclick="switchSubTab(event, 'sub_student_directory_view')">Student Directory Viewer</button>
+                <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub_student_admission_form_view')">New Student Registration Intake Form</button>
+                <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub_teacher_directory_view')">Teacher Registry Portfolio</button>
+                <button class="sub-tab-btn" onclick="switchSubTab(event, 'sub_teacher_onboarding_form_view')">Faculty Onboarding Recruitment</button>
+            </div>
+
+            <!-- STUDENT DIRECTORY VIEW -->
+            <div id="sub_student_directory_view" class="sub-content-pane" style="display: flex; flex-direction: column; height: 100%; overflow: hidden;">
+                <div class="search-wrapper">
+                    <input type="text" id="dirSearchInput" onkeyup="searchMasterDirectoryTable()" placeholder="🔍 Query master student record matrix by any attribute keyword...">
+                </div>
+                <div class="table-responsive">
+                    <table style="min-width: 2800px;">
+                        <thead>
+                            <tr>
+                                <th style="width: 100px;">Status/Action</th>
+                                <th>Student ID</th>
+                                <th>Full Name</th>
+                                <th>Class Grid</th>
+                                <th>Gender</th>
+                                <th>DOB</th>
+                                <th>Father Identity Name</th>
+                                <th>Mother Identity Name</th>
+                                <th>Father Occupation</th>
+                                <th>Mother Occupation</th>
+                                <th>WhatsApp Comms Phone</th>
+                                <th>Alternative Telephone</th>
+                                <th>Aadhaar Registry</th>
+                                <th>PAN Card Index</th>
+                                <th>APAAR National ID</th>
+                                <th>Blood Group</th>
+                                <th>Height (cm)</th>
+                                <th>Weight (kg)</th>
+                                <th>Mother Tongue</th>
+                                <th>Nationality</th>
+                                <th>Religion</th>
+                                <th>Category Alignment</th>
+                                <th>Caste Designation</th>
+                                <th>Previous Institution Attended</th>
+                                <th>Permanent Residential Address</th>
+                            </tr>
+                        </thead>
+                        <tbody id="masterDirectoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- STUDENT INTAKE REGISTRATION FORM -->
+            <div id="sub_student_admission_form_view" class="sub-content-pane" style="display: none; height: 100%; overflow-y: auto; padding: 10px 0;">
+                <div class="centered-form-container">
+                    <h2>New Student Registration Intake Form</h2>
+                    <form id="masterAdmissionSystemForm" onsubmit="executeStudentAdmissionOnboarding(event)">
+                        <div class="form-grid">
+                            <div class="form-group"><label>First Name Signature*</label><input type="text" id="adm_fName" required></div>
+                            <div class="form-group"><label>Last Name Signature*</label><input type="text" id="adm_lName" required></div>
+                            <div class="form-group"><label>Gender Spectrum</label><select id="adm_gender"><option>Male</option><option>Female</option><option>Other Aligned</option></select></div>
+                            <div class="form-group">
+                                <label>Applying Matrix Class Segment*</label>
+                                <select id="adm_grade" required>
+                                    <option value="Pre-Nur">Pre-Nursery</option><option value="Nur">Nursery</option><option value="KG">KG Standard</option>
+                                    <script>for(let i=1; i<=12; i++) document.write(`<option value="${i}">Class ${i}</option>`);</script>
+                                </select>
+                            </div>
+                            <div class="form-group"><label>Date of Birth Calendar</label><input type="date" id="adm_dob"></div>
+                            <div class="form-group"><label>Father Legal Name</label><input type="text" id="adm_fatherName"></div>
+                            <div class="form-group"><label>Mother Legal Name</label><input type="text" id="adm_motherName"></div>
+                            <div class="form-group"><label>Father Legal Occupation</label><input type="text" id="adm_fatherOcc"></div>
+                            <div class="form-group"><label>Mother Legal Occupation</label><input type="text" id="adm_motherOcc"></div>
+                            <div class="form-group"><label>Primary WhatsApp Protocol Number</label><input type="tel" id="adm_waPhone"></div>
+                            <div class="form-group"><label>Secondary Telephone Landline</label><input type="tel" id="adm_telPhone"></div>
+                            <div class="form-group"><label>Government Aadhaar Identity Code</label><input type="text" id="adm_aadhaar" placeholder="12-Digit Identity Cover"></div>
+                            <div class="form-group"><label>Income Tax Permanent Account Number (PAN)</label><input type="text" id="adm_pan"></div>
+                            <div class="form-group"><label>APAAR Academic Identity Register</label><input type="text" id="adm_apaar"></div>
+                            <div class="form-group"><label>Blood Group Matrix</label><input type="text" id="adm_blood"></div>
+                            <div class="form-group"><label>Height Track Indicators (cm)</label><input type="text" id="adm_height"></div>
+                            <div class="form-group"><label>Weight Track Indicators (kg)</label><input type="text" id="adm_weight"></div>
+                            <div class="form-group"><label>Primary Mother Tongue</label><input type="text" id="adm_tongue"></div>
+                            <div class="form-group"><label>Nationality Register Context</label><input type="text" id="adm_nat" value="Indian"></div>
+                            <div class="form-group"><label>Religion Census Affiliation</label><input type="text" id="adm_rel"></div>
+                            <div class="form-group"><label>Administrative Category Classification</label><input type="text" id="adm_cat" placeholder="SC / ST / OBC / GEN Profile Matrix"></div>
+                            <div class="form-group"><label>Caste Lineage Specification</label><input type="text" id="adm_caste"></div>
+                            <div class="form-group"><label>Previous Academic School Attended History</label><input type="text" id="adm_prevSchool"></div>
+                            <div class="form-group full-width"><label>Permanent Residential Address Coordinates</label><textarea id="adm_address" rows="2"></textarea></div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="submit" class="btn btn-primary" style="padding:12px 35px;">⚡ Commit Onboarding Admission</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- TEACHER DIRECTORY VIEW -->
+            <div id="sub_teacher_directory_view" class="sub-content-pane" style="display: none; flex-direction: column; height: 100%; overflow: hidden;">
+                <div class="search-wrapper">
+                    <input type="text" id="tchDirSearchInput" onkeyup="searchTeacherDirectoryTable()" placeholder="🔍 Query faculty record tracks matrices by keywords sequences...">
+                </div>
+                <div class="table-responsive">
+                    <table style="min-width: 1400px;">
+                        <thead>
+                            <tr>
+                                <th>Status</th>
+                                <th>Teacher ID</th>
+                                <th>Teacher Full Name</th>
+                                <th>Contact Number</th>
+                                <th>Assigned Subject Fields</th>
+                                <th>Base Salary Index Scale</th>
+                                <th>Joining Date</th>
+                                <th>Residential Coordinates</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherDirectoryTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TEACHER ONBOARDING RECRUITMENT FORM -->
+            <div id="sub_teacher_onboarding_form_view" class="sub-content-pane" style="display: none; height: 100%; overflow-y: auto; padding: 10px 0;">
+                <div class="centered-form-container" style="border-top: 4px solid var(--purple);">
+                    <h2>Faculty Onboarding Recruitment Form</h2>
+                    <form id="teacherOnboardingSystemForm" onsubmit="executeTeacherOnboardingRecruitment(event)">
+                        <div class="form-grid">
+                            <div class="form-group"><label>Teacher ID Code Prefix*</label><input type="text" id="tch_id" placeholder="e.g., TCH-101" required></div>
+                            <div class="form-group"><label>Faculty Full Legal Name*</label><input type="text" id="tch_name" required></div>
+                            <div class="form-group"><label>Primary Contact Protocol Telephone*</label><input type="tel" id="tch_phone" required></div>
+                            <div class="form-group"><label>Assigned Core Academic Domain Discipline*</label><input type="text" id="tch_subject" placeholder="e.g., Computer Science & AI" required></div>
+                            <div class="form-group"><label>Base Monthly Remuneration Scale (₹)*</label><input type="number" id="tch_salary" placeholder="e.g., 55000" required></div>
+                            <div class="form-group"><label>Recruitment Clearing Joining Date</label><input type="date" id="tch_joinDate"></div>
+                            <div class="form-group full-width"><label>Permanent Living Address Coordinates</label><textarea id="tch_address" rows="2"></textarea></div>
+                        </div>
+                        <div style="text-align: center; margin-top: 15px;">
+                            <button type="submit" class="btn" style="background: var(--purple); color: white; padding:12px 35px;">💼 Complete Faculty Onboarding Registry</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 2: STUDENT & TEACHER DAILY ATTENDANCE PORTAL -->
+        <section id="mod_student_attendance" class="workspace-module">
+            <div class="inner-sub-tabs">
+                <button class="sub-tab-btn active" id="att_tab_live" onclick="switchAttendanceSubView('LIVE')">Daily Register Intake Portal</button>
+                <button class="sub-tab-btn" id="att_tab_annual" onclick="switchAttendanceSubView('ANNUAL')">Annual Attendance Summary Ledger</button>
+                <button class="sub-tab-btn" id="att_tab_teacher" onclick="switchAttendanceSubView('TEACHER')">Faculty Attendance Logs Deck</button>
+                <button class="sub-tab-btn" id="att_tab_teacher_monthly" onclick="switchAttendanceSubView('TEACHER_MONTHLY')">Faculty Monthly Summary Report</button>
+            </div>
+
+            <!-- LIVE INTAKE WORKSPACE VIEW -->
+            <div id="att_workspace_live_view" style="display: flex; flex-direction: column; flex-grow: 1; overflow: hidden;">
+                <div class="dashboard-config-bar">
+                    <div>
+                        <h2 style="margin:0; border:none; padding:0;">Daily Attendance Tracker Engine</h2>
+                        <p id="attCurrentSelectionMetaDisplay" style="color:var(--secondary); font-size:12px; margin-top:4px;">Awaiting parameter selection query sequence initialization...</p>
+                    </div>
+                    <div style="display:flex; flex-wrap: wrap; gap:12px; align-items:center;">
+                        <div style="display: flex; align-items: center; gap: 6px; justify-content: center; width: 100%; max-width: 240px;">
+                            <label style="margin:0; white-space: nowrap;">Attendance Date:</label>
+                            <input type="date" id="att_targetExecutionDate" onchange="handleLiveAttendanceDateChangeRouter()" style="padding:4px 8px;">
+                        </div>
+                        <select id="attClassSelectorDropdownMenu" onchange="executeRenderQueryOfAttendanceGrid()" style="width:180px;">
+                            <option value="">-- Choose Target Class --</option>
+                            <option value="Pre-Nur">Pre-Nursery</option><option value="Nur">Nursery</option><option value="KG">KG Standard</option>
+                            <script>for(let i=1; i<=12; i++) document.write(`<option value="${i}">Class ${i}</option>`);</script>
+                        </select>
+                        <select id="attGlobalDayStatusToggle" onchange="handleGlobalDayStatusShiftSelector()" style="width:160px; display:none; background:#f0fdf4; border-color:var(--success);">
+                            <option value="Standard">Regular Class Session</option>
+                            <option value="Holiday">Declared School Holiday</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Holiday Reason Box -->
+                <div id="attHolidayReasonFormSectionRow" style="display:none; background: #f0f9ff; border: 1px solid #bae6fd; padding:12px; border-radius:8px; margin-bottom:12px; text-align: center;">
+                    <label style="color:#0369a1; display: block; margin-bottom: 4px;">Declare Authorized Legal Reason for Holiday Summary Matrix*</label>
+                    <input type="text" id="attHolidayReasonFieldString" placeholder="e.g., Public Holiday, Monsoon Framework Recess..." style="max-width: 500px; background:#fff;">
+                </div>
+
+                <div id="attendanceEmptyStateFrame" style="text-align:center; padding:60px; color:var(--secondary); background:white; border-radius:8px; border:1px dashed var(--border);">
+                    ⚠️ Select a target class segment structural node in the parameters dropdown workspace header area to view matching structural profiles.
+                </div>
+
+                <form id="attendanceSubmissionFormPipeline" style="display:none; flex-grow:1; flex-direction:column; overflow:hidden;" onsubmit="saveAttendanceCaptureRecords(event)">
+                    <div class="table-responsive" style="flex-grow:1;">
+                        <table style="min-width: 600px;">
+                            <thead>
+                                <tr>
+                                    <th style="width:120px;">Roll System ID</th>
+                                    <th>Student Identity Profile Name</th>
+                                    <th style="width:340px;">Operational Attendance Status Toggle Matrix</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentAttendanceLiveRenderBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="text-align:center; margin-top:15px; flex-shrink:0;">
+                        <button type="submit" class="btn btn-primary" style="padding:12px 45px;">💾 Commit Daily Attendance Register</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- ANNUAL COMPILED REPORT VIEW -->
+            <div id="att_workspace_annual_view" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
+                <div class="dashboard-config-bar">
+                    <div>
+                        <h2 style="margin:0; border:none; padding:0;">Annual Attendance Compilation Registry</h2>
+                        <p style="color:var(--secondary); font-size:12px; margin-top:4px;">Comprehensive academic term dashboard summary tracking metrics.</p>
+                    </div>
+                    <div style="display:flex; gap:12px; align-items: center;">
+                        <label style="margin:0; white-space:nowrap; font-size:12px;">Target Evaluation Class:</label>
+                        <select id="attAnnualClassFilterDropdown" onchange="executeRenderQueryOfAnnualAttendanceLedger()" style="width:200px; padding:6px;">
+                            <option value="ALL">-- Display Master Institution Grid --</option>
+                            <option value="Pre-Nur">Pre-Nursery Standard</option>
+                            <option value="Nur">Nursery Standard</option>
+                            <option value="KG">KG Core Standard</option>
+                            <script>for(let i=1; i<=12; i++) document.write(`<option value="${i}">Class ${i}</option>`);</script>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="table-responsive" style="flex-grow:1;">
+                    <table style="min-width:1000px;">
+                        <thead>
+                            <tr>
+                                <th style="width:120px;">Student ID</th>
+                                <th style="width:250px;">Student Identity Profile Name</th>
+                                <th style="width:150px;">Class Segment</th>
+                                <th style="text-align:center;">Working Session Days</th>
+                                <th style="text-align:center; color:#16a34a;">Present Days Count</th>
+                                <th style="text-align:center; color:#dc2626;">Absent Days Allocation</th>
+                                <th style="text-align:center; color:#d97706;">Late Track Entry Count</th>
+                                <th style="text-align:center; width:180px;">Net Attendance Ratio (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentAttendanceAnnualReportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- TEACHER ATTENDANCE TRACK DECK PANELS -->
+            <div id="att_workspace_teacher_view" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
+                <div class="dashboard-config-bar">
+                    <div>
+                        <h2 style="margin:0; border:none; padding:0;">Faculty Attendance & Operational Timings Matrix</h2>
+                        <p style="color:var(--secondary); font-size:12px; margin-top:4px;">Log daily punch check-in sequences data metrics for authorized staff.</p>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 6px; justify-content: center;">
+                        <label style="margin:0; white-space: nowrap;">Logging Date:</label>
+                        <input type="date" id="att_teacherExecutionDate" onchange="executeRenderQueryOfTeacherAttendanceGrid()" style="width:150px; padding:4px 8px;">
+                    </div>
+                </div>
+                
+                <form id="teacherAttendanceCaptureFormPipeline" style="display:flex; flex-grow:1; flex-direction:column; overflow:hidden;" onsubmit="saveTeacherAttendanceCaptureRecords(event)">
+                    <div class="table-responsive" style="flex-grow:1;">
+                        <table style="min-width:1000px;">
+                            <thead>
+                                <tr>
+                                    <th style="width:120px;">Teacher ID</th>
+                                    <th style="width:220px;">Staff Profile Identity Name</th>
+                                    <th style="width:360px;">Punch Registry Operational Status Toggle</th>
+                                    <th>Punch Check-In Shift Time</th>
+                                    <th>Punch Check-Out Shift Time</th>
+                                </tr>
+                            </thead>
+                            <tbody id="teacherAttendanceLiveRenderBody"></tbody>
+                        </table>
+                    </div>
+                    <div style="text-align:center; margin-top:15px; flex-shrink:0;">
+                        <button type="submit" class="btn" style="background:var(--purple); color:white; padding:12px 45px;">💾 Commit Faculty Daily Ledger</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- TEACHER MONTHLY ACCOUNT SUMMARY VIEW -->
+            <div id="att_workspace_teacher_monthly_view" style="display: none; flex-direction: column; flex-grow: 1; overflow: hidden;">
+                <div class="dashboard-config-bar">
+                    <div>
+                        <h2 style="margin:0; border:none; padding:0;">Faculty Monthly Attendance Summary Report</h2>
+                        <p style="color:var(--secondary); font-size:12px; margin-top:4px;">Compiled evaluation parameters for institutional payroll cycles auditing checks.</p>
+                    </div>
+                </div>
+                <div class="table-responsive" style="flex-grow:1;">
+                    <table style="min-width:1000px;">
+                        <thead>
+                            <tr>
+                                <th>Teacher ID</th>
+                                <th>Staff Profile Name</th>
+                                <th>Academic Discipline Field</th>
+                                <th>Total Working Month Frame</th>
+                                <th style="color:#16a34a;">Full Present Days</th>
+                                <th style="color:#6b21a8;">Half-Day Allocations</th>
+                                <th style="color:#d97706;">Late Track Entry Count</th>
+                                <th style="color:#dc2626;">Absent Counts</th>
+                                <th>Net Duty Execution Ratio (%)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="teacherAttendanceMonthlyReportTableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 3: STUDENT FEE MANAGEMENT LEDGER MATRIX -->
+        <section id="mod_student_fees" class="workspace-module">
+            <div class="dashboard-config-bar" style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:16px;">
+                <div>
+                    <label style="font-weight:bold; color:var(--primary-dark);">Modify Display Institution Structural Banner</label>
+                    <input type="text" id="fee_schoolIdentityModifierInput" value="BR International School" onkeyup="updateGlobalSchoolIdentityBinding()" style="margin-top:4px;">
+                </div>
+                <div style="display:flex; gap:10px; align-items:flex-end;">
+                    <div style="flex-grow:1; text-align: center;">
+                        <label style="font-weight:bold; color:var(--primary-dark);">Inject Custom Account Component Heading</label>
+                        <input type="text" id="fee_customColTitleNode" placeholder="e.g. Lab Equipment Fee...">
+                    </div>
+                    <button class="btn btn-secondary" onclick="addNewAccountColumnNodeToFeeMatrixRegistry()" style="height:38px;">⚡ Append Node</button>
+                </div>
+            </div>
+
+            <div class="metrics-grid-row">
+                <div class="metric-card-node">
+                    <h3>Revenue Received Logging Stream (Daily Frame)</h3>
+                    <div class="value" id="fee_metricDailyCashIn">₹0</div>
+                </div>
+                <div class="metric-card-node alt-variant">
+                    <h3>Cumulative Total Income Collected Ledger (Yearly Account Cycle)</h3>
+                    <div class="value" id="fee_metricCumulativeYearlyIncome">₹0</div>
+                </div>
+            </div>
+
+            <div class="split-grid">
+                <div class="form-side-panel">
+                    <h2>Post Revenue Fee Capture Entry</h2>
+                    <form id="feeCollectionExecutionForm" onsubmit="processFeePaymentTransactionEntry(event)">
+                        <div class="form-group"><label>Target Student Identity Account ID*</label><input type="text" id="fee_studentId" placeholder="e.g. #2026-101" required></div>
+                        <div class="form-group"><label>Student Verification Name*</label><input type="text" id="fee_studentName" placeholder="e.g. Rahul Yadav" required></div>
+                        <div class="form-group"><label>Class Alignment Matrix Segment*</label><input type="text" id="fee_studentClass" placeholder="e.g. Class 10-A" required></div>
+                        <div class="form-group">
+                            <label>Fee Ledger Structural Classifications (Hold Ctrl/Cmd Key)</label>
+                            <select id="fee_targetLedgerClassifications" multiple required onchange="generateDynamicBreakdownAllocationInputForms(); toggleMonthlyFeeCalendarWindowSelector();" style="text-align-last: center;"></select>
+                        </div>
+                        <div class="form-group" id="fee_monthlyTargetCalendarWindowGroup" style="display:none;">
+                            <label>Select Target Calendar Billing Cycle Months (Hold Ctrl/Cmd Key)</label>
+                            <select id="fee_targetBillingMonths" multiple onchange="generateDynamicBreakdownAllocationInputForms()" style="text-align-last: center;">
+                                <option value="Apr">April Cycle</option><option value="May">May Cycle</option><option value="Jun">June Cycle</option>
+                                <option value="Jul">July Cycle</option><option value="Aug">August Cycle</option><option value="Sep">September Cycle</option>
+                                <option value="Oct">October Cycle</option><option value="Nov">November Cycle</option><option value="Dec">December Cycle</option>
+                                <option value="Jan">January Cycle</option><option value="Feb">February Cycle</option><option value="Mar">March Cycle</option>
+                            </select>
+                        </div>
+                        <div class="allocation-box" id="fee_allocationFormBoxWrapper" style="display:none; text-align: center;">
+                            <div class="allocation-title" style="font-size: 11px; font-weight: bold; margin-bottom: 5px; color: var(--secondary);">Fee Breakdown Value Allocation Distribution</div>
+                            <div id="fee_innerFormFieldsTargetInjectArea"></div>
+                        </div>
+                        <div class="form-group"><label>Transaction Operational Logging Date</label><input type="date" id="fee_txDate" required></div>
+                        <div style="display:flex; align-items:center; gap:8px; margin:12px 0; background:#eff6ff; padding:10px; border-radius:6px; border:1px solid #bfdbfe; justify-content: center;">
+                            <input type="checkbox" id="fee_autoGenerateReceiptPrintToggle" style="width:auto; cursor:pointer;">
+                            <label for="fee_autoGenerateReceiptPrintToggle" style="margin:0; cursor:pointer; color:var(--primary-dark); font-size:12px;">Generate Account Statement Receipt Instantly On Commit</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary" style="width:100%; padding:12px;">Commit Ledger Matrix Entry Sequence</button>
+                    </form>
+                </div>
+
+                <div class="ledger-side-area">
+                    <div class="search-wrapper">
+                        <input type="text" id="fee_searchGeneralQuery" onkeyup="renderMasterFeeSpreadsheetDashboardMatrix()" placeholder="🔍 Search records by name..." style="flex:1; min-width:140px;">
+                        <input type="text" id="fee_searchClassQuery" onkeyup="renderMasterFeeSpreadsheetDashboardMatrix()" placeholder="🏫 Filter by class..." style="flex:1; min-width:100px;">
+                        <button class="btn btn-secondary" onclick="resetFeeTabFiltersPipeline()">Reset Matrix Filters</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead id="fee_masterSpreadsheetHeaderRow"></tbody>
+                            <tbody id="fee_masterSpreadsheetBodyRows"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 4: TEACHER PAYROLL AND HR SALARY DISBURSAL LEDGER -->
+        <section id="mod_teacher_payroll" class="workspace-module">
+            <div class="metrics-grid-row">
+                <div class="metric-card-node" style="border-left-color:var(--purple);">
+                    <h3>Disbursals Released Accounts File (Selected Daily Frame)</h3>
+                    <div class="value" id="pay_metricDailyPayout">₹0</div>
+                </div>
+                <div class="metric-card-node alt-variant" style="border-left-color:var(--dark-panel);">
+                    <h3>Total Human Resources Expenditure Outlay (Yearly Aggregate)</h3>
+                    <div class="value" id="pay_metricYearlyAggregatePayout">₹0</div>
+                </div>
+            </div>
+
+            <div class="split-grid">
+                <div class="form-side-panel" style="border-top:4px solid var(--purple);">
+                    <h2>Execute Human Resources Salary Disbursal Payout</h2>
+                    <form id="payrollDisbursalExecutionForm" onsubmit="processTeacherPayrollTransactionEntry(event)">
+                        <div class="form-group"><label>Teacher/Personnel Corporate ID*</label><input type="text" id="pay_teacherId" placeholder="e.g. TCH-101" required onkeyup="syncFacultyPayrollOnboardedMetadataFieldsRouter()"></div>
+                        <div class="form-group"><label>Teacher Official Legal Name*</label><input type="text" id="pay_teacherName" placeholder="e.g. Sriom Yadav" required></div>
+                        <div class="form-group">
+                            <label>Payroll Structural Allocation Components (Hold Ctrl/Cmd Key)</label>
+                            <select id="pay_targetPayrollClassifications" multiple required onchange="generateDynamicPayrollBreakdownAllocationInputForms(); togglePayrollMonthlyCalendarWindowSelector();" style="text-align-last: center;"></select>
+                        </div>
+                        <div class="form-group" id="pay_monthlyTargetCalendarWindowGroup" style="display:none;">
+                            <label>Select Target Calendar Payroll Months (Hold Ctrl/Cmd Key)</label>
+                            <select id="pay_targetBillingMonths" multiple onchange="generateDynamicPayrollBreakdownAllocationInputForms()" style="text-align-last: center;">
+                                <option value="Apr">April Target</option><option value="May">May Target</option><option value="Jun">June Target</option>
+                                <option value="Jul">July Target</option><option value="Aug">August Target</option><option value="Sep">September Target</option>
+                                <option value="Oct">October Target</option><option value="Nov">November Target</option><option value="Dec">December Target</option>
+                                <option value="Jan">January Target</option><option value="Feb">February Target</option><option value="Mar">March Target</option>
+                            </select>
+                        </div>
+                        <div class="allocation-box" id="pay_allocationFormBoxWrapper" style="display:none; border-color:var(--purple); text-align: center;">
+                            <div class="allocation-title" style="color:var(--purple-dark); font-size:11px; font-weight: bold; margin-bottom:5px;">Salary Compensation Allocation Matrix</div>
+                            <div id="pay_innerFormFieldsTargetInjectArea"></div>
+                        </div>
+                        <div class="form-group"><label>Disbursal Clearing Settlement Date</label><input type="date" id="pay_txDate" required></div>
+                        <div style="display:flex; align-items:center; gap:8px; margin:12px 0; background:#f5f3ff; padding:10px; border-radius:6px; border:1px solid #ddd6fe; justify-content: center;">
+                            <input type="checkbox" id="pay_autoGeneratePayslipPrintToggle" style="width:auto; cursor:pointer;">
+                            <label for="pay_autoGeneratePayslipPrintToggle" style="margin:0; cursor:pointer; color:var(--purple-dark); font-size:12px;">Generate Print Payslip Instantly on Commit</label>
+                        </div>
+                        <button type="submit" class="btn" style="width:100%; padding:12px; background:var(--purple); color:white;">Commit Disbursal Records</button>
+                    </form>
+                </div>
+
+                <div class="ledger-side-area">
+                    <div class="search-wrapper">
+                        <input type="text" id="pay_searchGeneralQuery" onkeyup="renderMasterPayrollSpreadsheetDashboardMatrix()" placeholder="🔍 Query compensation tracks parameters..." style="flex:1;">
+                        <button class="btn btn-secondary" onclick="clearFiltersOnPayrollEcosystemTab()">Reset Payroll View</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead id="pay_masterSpreadsheetHeaderRow"></tbody>
+                            <tbody id="pay_masterSpreadsheetBodyRows"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 5: TEACHER DAILY ACTIVITY TRACKER LOGS -->
+        <section id="mod_teacher_activities" class="workspace-module">
+            <div class="split-grid">
+                <div class="form-side-panel" style="border-top:4px solid #0284c7;">
+                    <h2>Log Daily Lesson & Classroom Activity</h2>
+                    <form id="activityLoggerSystemForm" onsubmit="executeLogActivityFormSubmissionPipeline(event)">
+                        <div class="form-group">
+                            <label for="act_teacherSelect">Select On-Duty Teacher Name Profile</label>
+                            <select id="act_teacherSelect" required></select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="act_classSelect">Select Target Classroom Matrix Structure Block</label>
+                            <select id="act_classSelect" required>
+                                <option value="Pre-Nursery">Pre-Nursery Module</option><option value="Nursery">Nursery Division</option><option value="KG">KG Core Standard</option>
+                                <script>for(let i=1; i<=12; i++) document.write(`<option value="Class ${i}">Class Unit ${i}</option>`);</script>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="act_subjectSelect">Subject Field Domain Core Classification</label>
+                            <select id="act_subjectSelect" required></select>
+                        </div>
+
+                        <div class="form-group"><label>Operational Core Activity Log Entry Date</label><input type="date" id="act_logDate" required></div>
+                        <div class="form-group">
+                            <label for="act_activityDetails">Lesson Progression Specifications & Execution Details</label>
+                            <textarea id="act_activityDetails" required placeholder="Type granular lecture outline details..." style="height:120px; resize:none; font-family:inherit; text-align: center;"></textarea>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="width:100%; background:#0284c7; padding:12px;">Commit Activity Matrix Journal Entry</button>
+                    </form>
+                </div>
+
+                <div class="ledger-side-area">
+                    <div class="search-wrapper">
+                        <input type="text" id="act_searchKeywordInput" onkeyup="renderTeacherActivityDashboardLogsDisplayMatrix()" placeholder="🔍 Universal search logs metrics..." style="flex:1;">
+                        <button class="btn btn-secondary" onclick="clearActivityDashboardSearchFilters()" style="background:#475569;">Reset Logs View</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Faculty Profile Name</th>
+                                    <th>Class Section Block</th>
+                                    <th>Subject Discipline</th>
+                                    <th>Calendar Date</th>
+                                    <th style="width:45%;"> Lecture Execution Activity Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody id="act_liveTableLogsInjectTargetBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- MODULE 6: INSTITUTIONAL SYLLABUS & CURRICULUM ARCHITECTURE BOARD -->
+        <section id="mod_syllabus_curriculum" class="workspace-module">
+            <div class="split-grid">
+                
+                <!-- Left panel controls entry logs -->
+                <div class="form-side-panel" style="border-top:4px solid var(--amber);">
+                    <h2>Modify Academic Month Blueprint</h2>
+                    <form id="syllabusAdjustmentForm" onsubmit="handleSyllabusFormSubmit(event)">
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label>Target Class Standard</label>
+                                <select id="syl_inputClass" required onchange="loadTargetMonthPlanMemoryRouter()">
+                                    <option value="">-- Choose Class --</option>
+                                    <option value="Pre-Nur">Pre-Nursery</option>
+                                    <option value="Nur">Nursery</option>
+                                    <option value="KG">KG Standard</option>
+                                    <script>for(let i=1; i<=12; i++) document.write(`<option value="Class ${i}">Class ${i}</option>`);</script>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Subject Domain Discipline</label>
+                                <input type="text" id="syl_inputSubject" placeholder="e.g., Computer Science" required onkeyup="loadTargetMonthPlanMemoryRouter()">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Assigned Faculty In Charge</label>
+                            <input type="text" id="syl_inputTeacher" placeholder="e.g., Sriom Yadav" required>
+                        </div>
+
+                        <div style="background: #fffbeb; border: 1px solid #fef3c7; padding: 12px; border-radius: 6px; margin-bottom: 12px;">
+                            <div class="form-group" style="margin-bottom:8px;">
+                                <label style="color: var(--amber-dark);">Select Action Plan Calendar Month*</label>
+                                <select id="syl_targetMonth" required style="background: white; border-color: var(--amber);" onchange="loadTargetMonthPlanMemoryRouter()">
+                                    <option value="April">April Cycle</option>
+                                    <option value="May">May Cycle</option>
+                                    <option value="June">June Cycle</option>
+                                    <option value="July">July Cycle</option>
+                                    <option value="August">August Cycle</option>
+                                    <option value="September">September Cycle</option>
+                                    <option value="October">October Cycle</option>
+                                    <option value="November">November Cycle</option>
+                                    <option value="December">December Cycle</option>
+                                    <option value="January">January Cycle</option>
+                                    <option value="February">February Cycle</option>
+                                    <option value="March">March Cycle</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="margin-bottom:0;">
+                                <label>Target Completion Progress for this Month (%)</label>
+                                <input type="number" id="syl_inputProgress" min="0" max="100" placeholder="e.g., 65" value="0" required style="background: white;">
+                            </div>
+                            <div class="form-group" style="margin-top:12px; margin-bottom:0;">
+                                <label style="color: var(--success);">Actual Syllabus Completed So Far (%)</label>
+                                <input type="number" id="syl_inputActualCompleted" min="0" max="100" placeholder="e.g., 55" value="0" required style="background: white; border-color: var(--success);">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Yearly Global Syllabus Matrix Outline (Common across months)</label>
+                            <textarea id="syl_wholeSyllabusOverview" rows="3" placeholder="Declare all chapters, textbook index references, or overall structural blueprint guidelines..." style="text-align: center;"></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label>What will be done in the Selected Month?*</label>
+                            <textarea id="syl_syllabusDetails" rows="4" placeholder="Detail specific chapters to be taught, lab routines, milestones or monthly homework targets..." required style="text-align: center;"></textarea>
+                        </div>
+                        <button type="submit" class="btn" style="background: var(--amber); color: white; width: 100%;">💾 Save Academic Month Parameters</button>
+                    </form>
+
+                    <div style="margin-top: 20px; border-top: 1px solid var(--border); padding-top: 15px; text-align: center;">
+                        <h2 style="font-size:13px; margin-bottom:10px;">Export Workload Dossier</h2>
+                        <div class="form-group">
+                            <label>Target Faculty Name</label>
+                            <select id="syl_teacherPrintSelector"></select>
+                        </div>
+                        <button class="btn btn-secondary" onclick="compileSyllabusDossierReport('TEACHER')" style="width:100%; font-size:12px; padding:8px;">🖨️ Compile Teacher Work Portfolio</button>
+                    </div>
+
+                    <div style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 15px; text-align: center;">
+                        <h2 style="font-size:13px; margin-bottom:10px;">Export Class Scheme Blueprint</h2>
+                        <div class="form-group">
+                            <label>Target Class Level</label>
+                            <select id="syl_classPrintSelector">
+                                <option value="Pre-Nur">Pre-Nursery</option>
+                                <option value="Nur">Nursery</option>
+                                <option value="KG">KG Standard</option>
+                                <script>for(let i=1; i<=12; i++) document.write(`<option value="Class ${i}">Class ${i}</option>`);</script>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary" onclick="compileSyllabusDossierReport('CLASS')" style="width:100%; font-size:12px; padding:8px; background:var(--purple-dark);">🖨️ Compile Class Curriculum Map</button>
+                    </div>
+                </div>
+
+                <!-- Right Side Master Log Board Sheet -->
+                <div class="ledger-side-area">
+                    <div class="search-wrapper">
+                        <input type="text" id="syl_searchKeyword" placeholder="🔍 Query data schema by any keyword..." onkeyup="executeSyllabusUIStateRender()" style="flex:1;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <label style="white-space: nowrap; margin: 0; font-size:12px;">Class Dashboard Filter:</label>
+                            <select id="syl_macroClassMapSelector" onchange="executeSyllabusUIStateRender()" style="width:160px; padding:6px;">
+                                <option value="ALL">-- Display Master Grid --</option>
+                                <option value="Pre-Nur">Pre-Nursery Map</option>
+                                <option value="Nur">Nursery Map</option>
+                                <option value="KG">KG Standard Map</option>
+                                <script>for(let i=1; i<=12; i++) document.write(`<option value="Class ${i}">Class ${i} Map</option>`);</script>
+                            </select>
+                        </div>
+                        <button class="btn btn-secondary" style="padding: 10px;" onclick="resetSyllabusDashboardViewFilters()">Clear Filters</button>
+                    </div>
+
+                    <div class="table-responsive" id="syl_dashboardViewportFrame" style="padding: 10px; background: #f8fafc;">
+                        <!-- Dynamic spreadsheets injected by JavaScript pipeline -->
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- UNIVERSAL SYLLABUS & CURRICULUM PRINTER MODAL WRAPPER -->
+    <div class="modal-overlay-view" id="syl_curriculumModalOverlayWindowPane">
+        <div class="modal-box-ticket" style="width: 780px;">
+            <div class="ticket-view-pane" id="printTargetAreaViewport"></div>
+            <div style="display: flex; gap: 10px; justify-content: flex-end; padding-top:10px; border-top:1px solid var(--border);">
+                <button class="btn btn-secondary" onclick="closeSyllabusCurriculumModalWindowOverlay()">Dismiss Interface Window</button>
+                <button class="btn" onclick="executeSystemPrintJobOnActiveModalView()" style="background: var(--amber); color: white;">🖨️ Dispatch Print Spooler</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ====================================================
+        4. UNIFIED ENTERPRISE BACKEND JAVASCRIPT PIPELINES 
+    ==================================================== -->
+    <script>
+        /* --- MEMORY RUNTIME ARCHITECTURES INITIALIZED BLANK --- */
+        let globalSystemDatabaseStateDate = new Date().toISOString().split('T')[0];
+
+        // Core In-Memory Operational Arrays
+        let studentMasterDatabaseCoreRegistry = [];
+        let pay_teacherDirectoryDatabaseMappingBook = {};
+        let act_teachersSelectionParamDropdownList = [];
+        let act_activityLogsCentralRegistryPipeline = [];
+        let syllabusCentralMatrixRegistry = [];
+
+        // Structural Accounting Columns Register Setup
+        let fee_columnsRegistryStructureConfigNodes = [
+            { key: "admission", label: "Admission Entry Cost", isSpecial: true },
+            { key: "exam1", label: "Examination Fee Mid-Term", isSpecial: true },
+            { key: "exam2", label: "Examination Fee End-Term", isSpecial: true },
+            { key: "Apr", label: "April Cycle Balance", isSpecial: false },
+            { key: "May", label: "May Cycle Balance", isSpecial: false },
+            { key: "Jun", label: "June Cycle Balance", isSpecial: false },
+            { key: "Jul", label: "July Cycle Balance", isSpecial: false },
+            { key: "Aug", label: "August Cycle Balance", isSpecial: false },
+            { key: "Sep", label: "September Cycle Balance", isSpecial: false },
+            { key: "Oct", label: "October Cycle Balance", isSpecial: false },
+            { key: "Nov", label: "November Cycle Balance", isSpecial: false },
+            { key: "Dec", label: "December Cycle Balance", isSpecial: false },
+            { key: "Jan", label: "January Cycle Balance", isSpecial: false },
+            { key: "Feb", label: "February Cycle Balance", isSpecial: false },
+            { key: "Mar", label: "March Cycle Balance", isSpecial: false }
+        ];
+
+        let fee_studentBalancesDatabaseMappingBook = {};
+        let fee_transactionRegistryLogPipeline = [];
+
+        let pay_columnsRegistryStructureConfigNodes = [
+            { key: "Apr", label: "April Cycle Remuneration", isSpecial: false },
+            { key: "May", label: "May Cycle Remuneration", isSpecial: false },
+            { key: "Jun", label: "June Cycle Remuneration", isSpecial: false },
+            { key: "Jul", label: "July Cycle Remuneration", isSpecial: false },
+            { key: "Aug", label: "August Cycle Remuneration", isSpecial: false },
+            { key: "Sep", label: "September Cycle Remuneration", isSpecial: false },
+            { key: "Oct", label: "October Cycle Remuneration", isSpecial: false },
+            { key: "Nov", label: "November Cycle Remuneration", isSpecial: false },
+            { key: "Dec", label: "December Cycle Remuneration", isSpecial: false },
+            { key: "Jan", label: "January Cycle Remuneration", isSpecial: false },
+            { key: "Feb", label: "February Cycle Remuneration", isSpecial: false },
+            { key: "Mar", label: "March Cycle Remuneration", isSpecial: false }
+        ];
+
+        let pay_transactionRegistryLogPipeline = [];
+        let act_subjectsSelectionParamDropdownList = ["Hindi Literature", "English Language", "Mathematics Core", "General Science Foundations", "Computer Science & AI Lab"];
+
+        /* --- PRIMARY CORE LAYERS CONTROLLERS APIS --- */
+        function switchPrimaryModule(clickEventObj, targetPrimaryModuleIdKey) {
+            document.querySelectorAll('.workspace-module').forEach(moduleNode => moduleNode.classList.remove('active'));
+            document.querySelectorAll('.deck-btn').forEach(buttonNode => buttonNode.classList.remove('active'));
+
+            document.getElementById(targetPrimaryModuleIdKey).classList.add('active');
+            if(clickEventObj) clickEventObj.currentTarget.classList.add('active');
+
+            if (targetPrimaryModuleIdKey === 'mod_admission_directory') {
+                renderMasterStudentDirectorySpreadsheetGrid();
+                renderTeacherDirectorySpreadsheetGrid();
+            }
+            if (targetPrimaryModuleIdKey === 'mod_student_attendance') {
+                switchAttendanceSubView('LIVE');
+            }
+            if (targetPrimaryModuleIdKey === 'mod_student_fees') {
+                updateFeeTabComponentDropdownOptionsUIElement();
+                renderTableHeaderStructureOnFeeMasterSpreadsheetGrid();
+                renderMasterFeeSpreadsheetDashboardMatrix();
+            }
+            if (targetPrimaryModuleIdKey === 'mod_teacher_payroll') {
+                updatePayrollTabComponentDropdownOptionsUIElement();
+                renderTableHeaderStructureOnPayrollMasterSpreadsheetGrid();
+                renderMasterPayrollSpreadsheetDashboardMatrix();
+            }
+            if (targetPrimaryModuleIdKey === 'mod_teacher_activities') {
+                populateTeacherActivityDropdownParamsSelectorsUIElements();
+                renderTeacherActivityDashboardLogsDisplayMatrix();
+            }
+            if (targetPrimaryModuleIdKey === 'mod_syllabus_curriculum') {
+                executeSyllabusUIStateRender();
+            }
+        }
+
+        function switchSubTab(clickEventObj, targetSubPaneDOMIdKey) {
+            const container = clickEventObj ? clickEventObj.currentTarget.parentElement : document.querySelector('.inner-sub-tabs');
+            container.querySelectorAll('.sub-tab-btn').forEach(tabBtnNode => tabBtnNode.classList.remove('active'));
+            container.parentElement.querySelectorAll('.sub-content-pane').forEach(paneNode => paneNode.style.display = 'none');
+
+            document.getElementById(targetSubPaneDOMIdKey).style.display = 'flex';
+            if(clickEventObj) clickEventObj.currentTarget.classList.add('active');
+        }
+
+        function syncGlobalClockAcrossModules() {
+            globalSystemDatabaseStateDate = document.getElementById('globalMasterSystemClock').value;
+            document.getElementById('att_targetExecutionDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('att_teacherExecutionDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('fee_txDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('pay_txDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('act_logDate').value = globalSystemDatabaseStateDate;
+
+            renderMasterFeeSpreadsheetDashboardMatrix();
+            renderMasterPayrollSpreadsheetDashboardMatrix();
+            renderTeacherActivityDashboardLogsDisplayMatrix();
+            executeSyllabusUIStateRender();
+            executeRenderQueryOfAnnualAttendanceLedger();
+        }
+
+        function handleLiveAttendanceDateChangeRouter() { executeRenderQueryOfAttendanceGrid(); }
+
+        /* --- MODULE 1 INTERFACES: ONBOARDING DIRECTORIES ENGINE --- */
+        function renderMasterStudentDirectorySpreadsheetGrid() {
+            const tbody = document.getElementById('masterDirectoryTableBody');
+            tbody.innerHTML = "";
+            if (studentMasterDatabaseCoreRegistry.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="25" style="padding: 20px; color: var(--secondary);">No students registered in memory database.</td></tr>`;
+                return;
+            }
+            studentMasterDatabaseCoreRegistry.forEach((student, arrayIndex) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><button onclick="toggleStudentActiveStatusIndicatorNode(${arrayIndex})" class="status-btn ${student.status === 'Active' ? 'status-active' : 'status-inactive'}">${student.status}</button></td>
+                    <td class="sticky-col-id" style="background:#f8fafc;">${student.id}</td>
+                    <td class="sticky-col-name" style="background:#fff; left:80px; color:var(--primary-dark);">${student.name}</td>
+                    <td>Class ${student.grade}</td>
+                    <td>${student.gender}</td>
+                    <td>${student.dob}</td>
+                    <td>${student.fatherName}</td>
+                    <td>${student.motherName}</td>
+                    <td>${student.fatherOcc}</td>
+                    <td>${student.motherOcc}</td>
+                    <td>${student.waPhone}</td>
+                    <td>${student.telPhone}</td>
+                    <td><span style="font-family:monospace; color:var(--secondary); font-size:11px;">[Aadhaar Redacted]</span></td>
+                    <td>${student.pan}</td>
+                    <td>${student.apaar}</td>
+                    <td><span class="status-pill-box" style="background:#eff6ff; color:var(--primary); font-weight:700;">${student.blood}</span></td>
+                    <td>${student.h} cm</td>
+                    <td>${student.w} kg</td>
+                    <td>${student.lang}</td>
+                    <td>${student.nat}</td>
+                    <td>${student.rel}</td>
+                    <td>${student.cat}</td>
+                    <td>${student.caste}</td>
+                    <td>${student.prev}</td>
+                    <td style="white-space:normal; max-width:280px; font-size:11px; color:#475569; text-align: left;">${student.addr}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function toggleStudentActiveStatusIndicatorNode(targetElementIndex) {
+            let sObj = studentMasterDatabaseCoreRegistry[targetElementIndex];
+            sObj.status = (sObj.status === 'Active') ? 'Inactive' : 'Active';
+            renderMasterStudentDirectorySpreadsheetGrid();
+        }
+
+        function executeStudentAdmissionOnboarding(eventSubmitObj) {
+            eventSubmitObj.preventDefault();
+            const readVal = (id) => document.getElementById(id).value.trim() || "—";
+            const newId = "2026-" + (studentMasterDatabaseCoreRegistry.length + 101);
+            
+            let studentNode = {
+                id: newId, name: `${readVal('adm_fName')} ${readVal('adm_lName')}`,
+                grade: readVal('adm_grade'), gender: readVal('adm_gender'), dob: readVal('adm_dob'),
+                fatherName: readVal('adm_fatherName'), motherName: readVal('adm_motherName'), fatherOcc: readVal('adm_fatherOcc'), motherOcc: readVal('adm_motherOcc'),
+                waPhone: readVal('adm_waPhone'), telPhone: readVal('adm_telPhone'), adh: "[Aadhaar Redacted]", pan: readVal('adm_pan').toUpperCase(),
+                apaar: readVal('adm_apaar'), blood: readVal('adm_blood'), h: readVal('adm_height'), w: readVal('adm_weight'), lang: readVal('adm_tongue'),
+                nat: readVal('adm_nat'), rel: readVal('adm_rel'), cat: readVal('adm_cat'), caste: readVal('adm_caste'), prev: readVal('adm_prevSchool'), addr: readVal('adm_address'),
+                status: "Active"
+            };
+
+            studentMasterDatabaseCoreRegistry.push(studentNode);
+            alert(`Admission Onboarding Complete. Sync ID: ${newId}`);
+            document.getElementById('masterAdmissionSystemForm').reset();
+            switchSubTab(null, 'sub_student_directory_view');
+            renderMasterStudentDirectorySpreadsheetGrid();
+        }
+
+        function renderTeacherDirectorySpreadsheetGrid() {
+            const tbody = document.getElementById('teacherDirectoryTableBody');
+            tbody.innerHTML = "";
+            const profiles = Object.values(pay_teacherDirectoryDatabaseMappingBook);
+            if (profiles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="8" style="padding: 20px; color: var(--secondary);">No teachers registered in memory database.</td></tr>`;
+                return;
+            }
+            profiles.forEach(tch => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><span class="status-pill status-complete">${tch.status}</span></td>
+                    <td style="font-weight:700;">${tch.id}</td>
+                    <td style="color:var(--purple-dark); font-weight:600;">${tch.name}</td>
+                    <td>${tch.phone}</td>
+                    <td><strong>${tch.subject}</strong></td>
+                    <td style="font-weight:700; color:#16a34a;">₹${tch.salary}</td>
+                    <td>${tch.joinDate}</td>
+                    <td style="font-size:11px; max-width:200px; overflow:hidden; text-overflow:ellipsis; text-align: left;">${tch.address}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function executeTeacherOnboardingRecruitment(eventSubmitObj) {
+            eventSubmitObj.preventDefault();
+            const id = document.getElementById('tch_id').value.trim().toUpperCase();
+            const name = document.getElementById('tch_name').value.trim();
+            const phone = document.getElementById('tch_phone').value.trim();
+            const subject = document.getElementById('tch_subject').value.trim();
+            const salary = parseFloat(document.getElementById('tch_salary').value) || 0;
+            const joinDate = document.getElementById('tch_joinDate').value || globalSystemDatabaseStateDate;
+            const address = document.getElementById('tch_address').value.trim() || "—";
+
+            if (pay_teacherDirectoryDatabaseMappingBook[id]) {
+                alert("A faculty profile matching this identifier node already exists.");
+                return;
+            }
+
+            pay_teacherDirectoryDatabaseMappingBook[id] = {
+                id: id, name: name, phone: phone, subject: subject, salary: salary, joinDate: joinDate, address: address, dates: [], balances: {}, status: "Active"
+            };
+
+            if (!act_teachersSelectionParamDropdownList.includes(name)) {
+                act_teachersSelectionParamDropdownList.push(name);
+            }
+
+            alert(`Faculty onboarding registry sequence complete for ${name}.`);
+            document.getElementById('teacherOnboardingSystemForm').reset();
+            switchSubTab(null, 'sub_teacher_directory_view');
+            renderTeacherDirectorySpreadsheetGrid();
+        }
+
+        function searchMasterDirectoryTable() {
+            let filterValue = document.getElementById('dirSearchInput').value.toLowerCase();
+            let rowNodes = document.getElementById('masterDirectoryTableBody').getElementsByTagName('tr');
+            for (let tr of rowNodes) {
+                if(tr.innerText.toLowerCase().includes("no students registered")) continue;
+                tr.style.display = tr.innerText.toLowerCase().includes(filterValue) ? "" : "none";
+            }
+        }
+
+        function searchTeacherDirectoryTable() {
+            let filterValue = document.getElementById('tchDirSearchInput').value.toLowerCase();
+            let rowNodes = document.getElementById('teacherDirectoryTableBody').getElementsByTagName('tr');
+            for (let tr of rowNodes) {
+                if(tr.innerText.toLowerCase().includes("no teachers registered")) continue;
+                tr.style.display = tr.innerText.toLowerCase().includes(filterValue) ? "" : "none";
+            }
+        }
+
+        /* --- MODULE 2 INTERFACES: ATTENDANCE SYSTEMS --- */
+        function switchAttendanceSubView(targetViewModeKey) {
+            const liveTab = document.getElementById('att_tab_live');
+            const annualTab = document.getElementById('att_tab_annual');
+            const teacherTab = document.getElementById('att_tab_teacher');
+            const teacherMonthlyTab = document.getElementById('att_tab_teacher_monthly');
+            
+            document.getElementById('att_workspace_live_view').style.display = 'none';
+            document.getElementById('att_workspace_annual_view').style.display = 'none';
+            document.getElementById('att_workspace_teacher_view').style.display = 'none';
+            document.getElementById('att_workspace_teacher_monthly_view').style.display = 'none';
+
+            liveTab.classList.remove('active'); annualTab.classList.remove('active'); teacherTab.classList.remove('active'); teacherMonthlyTab.classList.remove('active');
+
+            if (targetViewModeKey === 'LIVE') {
+                liveTab.classList.add('active'); document.getElementById('att_workspace_live_view').style.display = 'flex';
+                executeRenderQueryOfAttendanceGrid();
+            } else if (targetViewModeKey === 'ANNUAL') {
+                annualTab.classList.add('active'); document.getElementById('att_workspace_annual_view').style.display = 'flex';
+                executeRenderQueryOfAnnualAttendanceLedger();
+            } else if (targetViewModeKey === 'TEACHER') {
+                teacherTab.classList.add('active'); document.getElementById('att_workspace_teacher_view').style.display = 'flex';
+                executeRenderQueryOfTeacherAttendanceGrid();
+            } else if (targetViewModeKey === 'TEACHER_MONTHLY') {
+                teacherMonthlyTab.classList.add('active'); document.getElementById('att_workspace_teacher_monthly_view').style.display = 'flex';
+                executeRenderQueryOfTeacherMonthlyLedger();
+            }
+        }
+
+        function handleGlobalDayStatusShiftSelector() {
+            const mode = document.getElementById('attGlobalDayStatusToggle').value;
+            document.getElementById('attHolidayReasonFormSectionRow').style.display = (mode === "Holiday") ? "block" : "none";
+            const targetClass = document.getElementById('attClassSelectorDropdownMenu').value;
+            if (targetClass) executeRenderQueryOfAttendanceGrid();
+        }
+
+        function executeRenderQueryOfAttendanceGrid() {
+            const targetClass = document.getElementById('attClassSelectorDropdownMenu').value;
+            const targetRenderBody = document.getElementById('studentAttendanceLiveRenderBody');
+            const emptyBanner = document.getElementById('attendanceEmptyStateFrame');
+            const formPipeline = document.getElementById('attendanceSubmissionFormPipeline');
+            const globalDaySelector = document.getElementById('attGlobalDayStatusToggle');
+
+            targetRenderBody.innerHTML = "";
+
+            if (!targetClass) {
+                emptyBanner.style.display = 'block'; formPipeline.style.display = 'none'; globalDaySelector.style.display = 'none';
+                document.getElementById('attHolidayReasonFormSectionRow').style.display = 'none';
+                return;
+            }
+
+            let filteredSet = studentMasterDatabaseCoreRegistry.filter(s => s.grade === targetClass && s.status === 'Active');
+
+            if (filteredSet.length === 0) {
+                emptyBanner.style.display = 'block'; formPipeline.style.display = 'none'; globalDaySelector.style.display = 'none';
+                document.getElementById('attHolidayReasonFormSectionRow').style.display = 'none';
+                emptyBanner.innerText = `⚠️ Zero active student profiles currently assigned to Class ${targetClass}.`;
+                return;
+            }
+
+            emptyBanner.style.display = 'none'; formPipeline.style.display = 'flex'; globalDaySelector.style.display = 'block';
+            const currentDayMode = globalDaySelector.value;
+
+            filteredSet.forEach(student => {
+                const trRowNode = document.createElement('tr');
+                let radioOptionsGroupString = currentDayMode === "Holiday" ? 
+                    `<span class="status-pill status-holiday">Campus Holiday Suspended Tracker</span>` : `
+                        <label class="radio-group" style="color:var(--success);"><input type="radio" name="att_std_radio_${student.id}" value="Present" checked> P</label>
+                        <label class="radio-group" style="color:var(--danger);"><input type="radio" name="att_std_radio_${student.id}" value="Absent"> A</label>
+                        <label class="radio-group" style="color:#d97706;"><input type="radio" name="att_std_radio_${student.id}" value="Late"> L</label>
+                    `;
+
+                trRowNode.innerHTML = `
+                    <td style="font-weight:700; color:var(--secondary); text-align: center;">${student.id}</td>
+                    <td><strong>${student.name}</strong></td>
+                    <td><div>${radioOptionsGroupString}</div></td>
+                `;
+                targetRenderBody.appendChild(trRowNode);
+            });
+        }
+
+        function executeRenderQueryOfAnnualAttendanceLedger() {
+            const targetClassFilterKey = document.getElementById('attAnnualClassFilterDropdown').value;
+            const tableTargetBody = document.getElementById('studentAttendanceAnnualReportTableBody');
+            tableTargetBody.innerHTML = "";
+
+            let evaluationSet = studentMasterDatabaseCoreRegistry.filter(s => s.status === 'Active');
+            if (targetClassFilterKey !== "ALL") evaluationSet = evaluationSet.filter(s => s.grade === targetClassFilterKey);
+
+            if (evaluationSet.length === 0) {
+                tableTargetBody.innerHTML = `<tr><td colspan="8" style="text-align:center; padding:40px; font-weight:600; background:white;">⚠️ No data to compute. Populate students first.</td></tr>`;
+                return;
+            }
+
+            evaluationSet.forEach(student => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:700; color:var(--secondary);">${student.id}</td>
+                    <td><strong>${student.name}</strong></td>
+                    <td><span class="status-pill-box" style="background:#f1f5f9; color:var(--dark-panel); font-size:11px;">Class ${student.grade}</span></td>
+                    <td style="text-align:center;">0 Days</td>
+                    <td style="text-align:center; color:#16a34a; font-weight:700;">0</td>
+                    <td style="text-align:center; color:#dc2626; font-weight:700;">0</td>
+                    <td style="text-align:center; color:#d97706; font-weight:700;">0</td>
+                    <td style="text-align:center;"><span class="status-pill status-progress">0% Net</span></td>
+                `;
+                tableTargetBody.appendChild(tr);
+            });
+        }
+
+        function executeRenderQueryOfTeacherAttendanceGrid() {
+            const tbody = document.getElementById('teacherAttendanceLiveRenderBody');
+            tbody.innerHTML = "";
+
+            const profiles = Object.values(pay_teacherDirectoryDatabaseMappingBook).filter(t => t.status === "Active");
+            if (profiles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="padding: 20px; color: var(--secondary);">No active faculty members in registry.</td></tr>`;
+                return;
+            }
+
+            profiles.forEach(tch => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:700; color:var(--secondary);">${tch.id}</td>
+                    <td><strong style="color:var(--purple-dark);">${tch.name}</strong></td>
+                    <td>
+                        <div>
+                            <label class="radio-group" style="color:var(--success);"><input type="radio" name="att_tch_radio_${tch.id}" value="Present" checked> Present</label>
+                            <label class="radio-group" style="color:var(--danger);"><input type="radio" name="att_tch_radio_${tch.id}" value="Absent"> Absent</label>
+                            <label class="radio-group" style="color:#d97706;"><input type="radio" name="att_tch_radio_${tch.id}" value="Late"> Late</label>
+                            <label class="radio-group" style="color:#6b21a8;"><input type="radio" name="att_tch_radio_${tch.id}" value="HalfDay"> Half Day</label>
+                        </div>
+                    </td>
+                    <td><input type="time" id="tch_time_in_${tch.id}" value="08:30" style="padding:4px; font-size:12px; text-align: center;"></td>
+                    <td><input type="time" id="tch_time_out_${tch.id}" value="14:30" style="padding:4px; font-size:12px; text-align: center;"></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function executeRenderQueryOfTeacherMonthlyLedger() {
+            const tbody = document.getElementById('teacherAttendanceMonthlyReportTableBody');
+            tbody.innerHTML = "";
+
+            const profiles = Object.values(pay_teacherDirectoryDatabaseMappingBook);
+            if (profiles.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" style="padding: 20px; color: var(--secondary);">No faculty profiles initialized.</td></tr>`;
+                return;
+            }
+
+            profiles.forEach(tch => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight:700; color:var(--secondary);">${tch.id}</td>
+                    <td><strong>${tch.name}</strong></td>
+                    <td><span class="status-pill-box" style="background:#f5f3ff; color:var(--purple-dark); font-size:11px;">${tch.subject}</span></td>
+                    <td style="font-weight:600;">0 Days</td>
+                    <td style="color:#16a34a; font-weight:700;">0</td>
+                    <td style="color:#6b21a8; font-weight:700;">0</td>
+                    <td style="color:#d97706; font-weight:700;">0</td>
+                    <td style="color:#dc2626; font-weight:700;">0</td>
+                    <td><span class="status-pill status-inactive" style="width:75px; text-align:center;">0%</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        function saveAttendanceCaptureRecords(e) { e.preventDefault(); alert("Daily attendance ledger snapshot successfully locked."); }
+        function saveTeacherAttendanceCaptureRecords(e) { e.preventDefault(); alert("Faculty timings logs committed."); }
+        function syncFacultyPayrollOnboardedMetadataFieldsRouter() {
+            const id = document.getElementById('pay_teacherId').value.trim().toUpperCase();
+            const match = pay_teacherDirectoryDatabaseMappingBook[id];
+            if (match) { document.getElementById('pay_teacherName').value = match.name; }
+        }
+
+        /* --- MODULE 3 INTERFACES: STUDENT FEE MATRIX --- */
+        function updateFeeTabComponentDropdownOptionsUIElement() {
+            const dropdown = document.getElementById('fee_targetLedgerClassifications');
+            dropdown.innerHTML = "";
+            fee_columnsRegistryStructureConfigNodes.forEach(col => {
+                if (!col.key.match(/^(Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Jan|Feb|Mar)$/)) {
+                    dropdown.innerHTML += `<option value="${col.key}">${col.label}</option>`;
+                }
+            });
+            dropdown.innerHTML += `<option value="Monthly" selected>Monthly Static Tuition Fee Structure</option>`;
+        }
+
+        function toggleMonthlyFeeCalendarWindowSelector() {
+            const dropdown = document.getElementById('fee_targetLedgerClassifications');
+            const selectedVals = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+            document.getElementById('fee_monthlyTargetCalendarWindowGroup').style.display = selectedVals.includes("Monthly") ? "block" : "none";
+        }
+
+        function generateDynamicBreakdownAllocationInputForms() {
+            const classificationSelect = document.getElementById('fee_targetLedgerClassifications');
+            const calendarMonthSelect = document.getElementById('fee_targetBillingMonths');
+            const targetFieldsWrapperBox = document.getElementById('fee_allocationFormBoxWrapper');
+            const targetFieldsInjectArea = document.getElementById('fee_innerFormFieldsTargetInjectArea');
+
+            const selectedClassifications = Array.from(classificationSelect.selectedOptions).map(o => o.value);
+            const selectedMonths = Array.from(calendarMonthSelect.selectedOptions).map(o => o.value);
+
+            targetFieldsInjectArea.innerHTML = "";
+
+            if (selectedClassifications.length === 0 || (selectedClassifications.includes("Monthly") && selectedMonths.length === 0)) {
+                targetFieldsWrapperBox.style.display = "none"; return;
+            }
+            targetFieldsWrapperBox.style.display = "block";
+
+            selectedClassifications.forEach(key => {
+                if (key !== "Monthly") {
+                    const optText = Array.from(classificationSelect.options).find(o => o.value === key).text;
+                    appendSingleAllocationRowNodeMarkupElement(key, optText, targetFieldsInjectArea);
+                }
+            });
+
+            if (selectedClassifications.includes("Monthly")) {
+                selectedMonths.forEach(mKey => {
+                    const monthText = Array.from(calendarMonthSelect.options).find(o => o.value === mKey).text;
+                    appendSingleAllocationRowNodeMarkupElement(`month_${mKey}`, `Tuition Charge: ${monthText}`, targetFieldsInjectArea);
+                });
+            }
+        }
+
+        function appendSingleAllocationRowNodeMarkupElement(dataIdKey, titleDisplayLabel, parentContainerNode) {
+            parentContainerNode.innerHTML += `
+                <div style="font-weight:700; font-size:11px; margin-top:8px; color:var(--primary-dark); text-transform:uppercase;">${titleDisplayLabel}</div>
+                <div class="form-grid" style="margin-bottom:8px; margin-top:2px;">
+                    <div><label>Assigned liability (₹)</label><input type="number" class="fee_inner_input_assigned" data-target-node-key="${dataIdKey}" value="0" required></div>
+                    <div><label>Settlement Paid (₹)</label><input type="number" class="fee_inner_input_paid" data-target-node-key="${dataIdKey}" value="0" required></div>
+                </div>
+            `;
+        }
+
+        function renderTableHeaderStructureOnFeeMasterSpreadsheetGrid() {
+            const headerTargetRow = document.getElementById('fee_masterSpreadsheetHeaderRow');
+            let structuralMarkupString = `<tr><th class="sticky-col-id">Student ID</th><th class="sticky-col-name" style="left:80px;">Student Verified Name</th><th>Class Index</th>`;
+            fee_columnsRegistryStructureConfigNodes.forEach(col => {
+                structuralMarkupString += `<th style="background:#eff6ff; color:var(--primary-dark);">${col.label}</th>`;
+            });
+            structuralMarkupString += `<th class="total-sticky-col">Gross Net Paid</th></tr>`;
+            headerTargetRow.innerHTML = structuralMarkupString;
+        }
+
+        function renderMasterFeeSpreadsheetDashboardMatrix() {
+            const targetGridBody = document.getElementById('fee_masterSpreadsheetBodyRows');
+            targetGridBody.innerHTML = "";
+            const generalQueryValue = document.getElementById('fee_searchGeneralQuery').value.toLowerCase();
+            const classQueryValue = document.getElementById('fee_searchClassQuery').value.toLowerCase();
+
+            let activeRowsCount = 0;
+
+            studentMasterDatabaseCoreRegistry.forEach(student => {
+                const studentAccountMapping = fee_studentBalancesDatabaseMappingBook[student.id];
+                const matchesGeneral = student.id.toLowerCase().includes(generalQueryValue) || student.name.toLowerCase().includes(generalQueryValue);
+                const matchesClass = student.grade.toLowerCase().includes(classQueryValue);
+
+                if (matchesGeneral && matchesClass) {
+                    activeRowsCount++;
+                    let studentRunningPaidSumAccumulator = 0;
+                    let rowHtmlMarkup = `<tr><td class="sticky-col-id" style="background:#f8fafc; font-weight:bold;">${student.id}</td><td class="sticky-col-name" style="left:80px; font-weight:600; color:var(--primary-dark);">${student.name}</td><td>Class Room ${student.grade}</td>`;
+                    
+                    fee_columnsRegistryStructureConfigNodes.forEach(col => {
+                        const componentBalanceRecord = studentAccountMapping ? studentAccountMapping[col.key] : null;
+                        let cellStyleClassTag = "no-record", innerRenderDisplayValueText = "";
+                        if (componentBalanceRecord && componentBalanceRecord.paid > 0) {
+                            innerRenderDisplayValueText = "₹" + componentBalanceRecord.paid;
+                            studentRunningPaidSumAccumulator += componentBalanceRecord.paid;
+                            cellStyleClassTag = (componentBalanceRecord.paid >= componentBalanceRecord.assigned) ? "fee-full" : "fee-partial";
+                        }
+                        rowHtmlMarkup += `<td><span class="fee-amt-tag ${cellStyleClassTag}">${innerRenderDisplayValueText}</span></td>`;
+                    });
+                    rowHtmlMarkup += `<td class="total-sticky-col">₹${studentRunningPaidSumAccumulator}</td></tr>`;
+                    targetGridBody.innerHTML += rowHtmlMarkup;
+                }
+            });
+
+            if(activeRowsCount === 0) {
+                targetGridBody.innerHTML = `<tr><td colspan="${fee_columnsRegistryStructureConfigNodes.length + 4}" style="padding: 20px; color: var(--secondary);">No account statements loaded.</td></tr>`;
+            }
+
+            let computedDailyCashCounterSum = 0;
+            fee_transactionRegistryLogPipeline.forEach(tx => { if (tx.date === globalSystemDatabaseStateDate) computedDailyCashCounterSum += tx.amount; });
+            document.getElementById('fee_metricDailyCashIn').innerText = "₹" + computedDailyCashCounterSum;
+
+            let systemTotalYearlyFeesCollectedSum = fee_transactionRegistryLogPipeline.reduce((acc, curr) => acc + curr.amount, 0);
+            document.getElementById('fee_metricCumulativeYearlyIncome').innerText = "₹" + systemTotalYearlyFeesCollectedSum;
+        }
+
+        function processFeePaymentTransactionEntry(eventSubmitObj) {
+            eventSubmitObj.preventDefault();
+            const targetStudentId = document.getElementById('fee_studentId').value.trim().toUpperCase();
+            const txSelectedDateString = document.getElementById('fee_txDate').value;
+            const flagGenerateReceiptInstantly = document.getElementById('fee_autoGenerateReceiptPrintToggle').checked;
+
+            if(!studentMasterDatabaseCoreRegistry.some(s => s.id === targetStudentId)) {
+                alert("Target student ID node does not exist in master registry systems database."); return;
+            }
+
+            if (!fee_studentBalancesDatabaseMappingBook[targetStudentId]) fee_studentBalancesDatabaseMappingBook[targetStudentId] = {};
+
+            const formsAssignedInputsCollection = document.querySelectorAll('.fee_inner_input_assigned');
+            const formsPaidInputsCollection = document.querySelectorAll('.fee_inner_input_paid');
+            let incrementalTransactionLiquidCashSum = 0;
+
+            formsAssignedInputsCollection.forEach((assignedInputElement, arrayLoopIndex) => {
+                let targetNodeStorageKey = assignedInputElement.getAttribute('data-target-node-key');
+                let assignedNumericValue = parseFloat(assignedInputElement.value) || 0;
+                let paidNumericValue = parseFloat(formsPaidInputsCollection[arrayLoopIndex].value) || 0;
+
+                if (targetNodeStorageKey.startsWith('month_')) targetNodeStorageKey = targetNodeStorageKey.replace('month_', '');
+
+                fee_studentBalancesDatabaseMappingBook[targetStudentId][targetNodeStorageKey] = { assigned: assignedNumericValue, paid: paidNumericValue };
+                incrementalTransactionLiquidCashSum += paidNumericValue;
+            });
+
+            fee_transactionRegistryLogPipeline.push({ date: txSelectedDateString, amount: incrementalTransactionLiquidCashSum });
+            renderMasterFeeSpreadsheetDashboardMatrix();
+            alert("Transactional ledger parameters posted cleanly.");
+
+            if (flagGenerateReceiptInstantly) launchDynamicFeeReceiptModalInvoiceViewport(targetStudentId, txSelectedDateString);
+        }
+
+        function launchDynamicFeeReceiptModalInvoiceViewport(studentIdKey, transactionDateString) {
+            const studentProfileObj = studentMasterDatabaseCoreRegistry.find(s => s.id === studentIdKey);
+            const balanceMappingObj = fee_studentBalancesDatabaseMappingBook[studentIdKey];
+            if (!studentProfileObj || !balanceMappingObj) return;
+
+            document.getElementById('fee_lblRecpStudentId').innerText = studentIdKey;
+            document.getElementById('fee_lblRecpStudentName').innerText = studentProfileObj.name;
+            document.getElementById('fee_lblRecpStudentClass').innerText = studentProfileObj.grade;
+            document.getElementById('fee_lblRecpTxDate').innerText = transactionDateString;
+
+            const tableInjectBody = document.getElementById('fee_innerRecpItemizedTableLoopInjectArea');
+            tableInjectBody.innerHTML = "";
+            let macroSumAssignedAccumulator = 0, macroSumPaidAccumulator = 0;
+
+            fee_columnsRegistryStructureConfigNodes.forEach(col => {
+                const subRecordNode = balanceMappingObj[col.key];
+                if (subRecordNode && (subRecordNode.assigned > 0 || subRecordNode.paid > 0)) {
+                    macroSumAssignedAccumulator += subRecordNode.assigned; macroSumPaidAccumulator += subRecordNode.paid;
+                    tableInjectBody.innerHTML += `<tr><td style="text-align: center;"><strong>${col.label}</strong></td><td style="text-align:right;">₹${subRecordNode.assigned}</td><td style="text-align:right; color:var(--success); font-weight:700;">₹${subRecordNode.paid}</td></tr>`;
+                }
+            });
+
+            let computedNetAccountOutstandingDue = macroSumAssignedAccumulator - macroSumPaidAccumulator;
+            document.getElementById('fee_lblRecpTotalAssigned').innerText = "₹" + macroSumAssignedAccumulator;
+            document.getElementById('fee_lblRecpTotalPaid').innerText = "₹" + macroSumPaidAccumulator;
+            document.getElementById('fee_lblRecpTotalOutstandingDue').innerText = "₹" + (computedNetAccountOutstandingDue < 0 ? 0 : computedNetAccountOutstandingDue);
+            document.getElementById('fee_receiptModalOverlayWindowPane').style.display = "flex";
+        }
+
+        function closeFeeReceiptModalWindowViewportOverlay() { document.getElementById('fee_receiptModalOverlayWindowPane').style.display = "none"; }
+        function resetFeeTabFiltersPipeline() { document.getElementById('fee_searchGeneralQuery').value = ""; document.getElementById('fee_searchClassQuery').value = ""; renderMasterFeeSpreadsheetDashboardMatrix(); }
+
+        /* --- MODULE 4 INTERFACES: PERSONNEL PAYROLL --- */
+        function updatePayrollTabComponentDropdownOptionsUIElement() {
+            const dropdown = document.getElementById('pay_targetPayrollClassifications');
+            dropdown.innerHTML = "";
+            pay_columnsRegistryStructureConfigNodes.forEach(col => {
+                if (!col.key.match(/^(Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|Jan|Feb|Mar)$/)) {
+                    dropdown.innerHTML += `<option value="${col.key}">${col.label}</option>`;
+                }
+            });
+            dropdown.innerHTML += `<option value="Monthly" selected>Monthly Static Base Remuneration Scale</option>`;
+        }
+
+        function togglePayrollMonthlyCalendarWindowSelector() {
+            const dropdown = document.getElementById('pay_targetPayrollClassifications');
+            const selectedCollectionValues = Array.from(dropdown.selectedOptions).map(opt => opt.value);
+            document.getElementById('pay_monthlyTargetCalendarWindowGroup').style.display = selectedCollectionValues.includes("Monthly") ? "block" : "none";
+        }
+
+        function generateDynamicPayrollBreakdownAllocationInputForms() {
+            const classificationSelect = document.getElementById('pay_targetPayrollClassifications');
+            const calendarMonthSelect = document.getElementById('pay_targetBillingMonths');
+            const targetFieldsWrapperBox = document.getElementById('pay_allocationFormBoxWrapper');
+            const targetFieldsInjectArea = document.getElementById('pay_innerFormFieldsTargetInjectArea');
+
+            const selectedClassifications = Array.from(classificationSelect.selectedOptions).map(o => o.value);
+            const selectedMonths = Array.from(calendarMonthSelect.selectedOptions).map(o => o.value);
+
+            targetFieldsInjectArea.innerHTML = "";
+
+            if (selectedClassifications.length === 0 || (selectedClassifications.includes("Monthly") && selectedMonths.length === 0)) {
+                targetFieldsWrapperBox.style.display = "none"; return;
+            }
+            targetFieldsWrapperBox.style.display = "block";
+
+            selectedClassifications.forEach(key => {
+                if (key !== "Monthly") {
+                    const optText = Array.from(classificationSelect.options).find(o => o.value === key).text;
+                    appendSinglePayrollAllocationRowNodeMarkupElement(key, optText, targetFieldsInjectArea);
+                }
+            });
+
+            if (selectedClassifications.includes("Monthly")) {
+                selectedMonths.forEach(mKey => {
+                    const monthText = Array.from(calendarMonthSelect.options).find(o => o.value === mKey).text;
+                    appendSinglePayrollAllocationRowNodeMarkupElement(`month_${mKey}`, `Base Salary Element: ${monthText}`, targetFieldsInjectArea);
+                });
+            }
+        }
+
+        function appendSinglePayrollAllocationRowNodeMarkupElement(dataIdKey, titleDisplayLabel, parentContainerNode) {
+            parentContainerNode.innerHTML += `
+                <div style="font-weight:700; font-size:11px; margin-top:8px; color:var(--purple-dark); text-transform:uppercase;">${titleDisplayLabel}</div>
+                <div class="form-grid" style="margin-bottom:8px; margin-top:2px;">
+                    <div><label>Pay Scale Target Due (₹)</label><input type="number" class="pay_inner_input_assigned" data-target-node-key="${dataIdKey}" value="0" required style="text-align: center;"></div>
+                    <div><label>Net Capital Released (₹)</label><input type="number" class="pay_inner_input_paid" data-target-node-key="${dataIdKey}" value="0" required style="text-align: center;"></div>
+                </div>
+            `;
+        }
+
+        function renderTableHeaderStructureOnPayrollMasterSpreadsheetGrid() {
+            const headerTargetRow = document.getElementById('pay_masterSpreadsheetHeaderRow');
+            let structuralMarkupString = `<tr><th class="sticky-col-id">Teacher ID</th><th class="sticky-col-name" style="left:80px;">Teacher Official Legal Name</th>`;
+            pay_columnsRegistryStructureConfigNodes.forEach(col => {
+                structuralMarkupString += `<th class="special-hdr" style="background:#f5f3ff; color:var(--purple-dark);">${col.label}</th>`;
+            });
+            structuralMarkupString += `<th class="total-sticky-col" style="color:var(--purple-dark);">Gross Paid Out</th></tr>`;
+            headerTargetRow.innerHTML = structuralMarkupString;
+        }
+
+        function renderMasterPayrollSpreadsheetDashboardMatrix() {
+            const targetGridBody = document.getElementById('pay_masterSpreadsheetBodyRows');
+            targetGridBody.innerHTML = "";
+            const generalQueryValue = document.getElementById('pay_searchGeneralQuery').value.toLowerCase();
+
+            let facultyRowsCounter = 0;
+
+            for (const [id, profile] of Object.entries(pay_teacherDirectoryDatabaseMappingBook)) {
+                if (id.toLowerCase().includes(generalQueryValue) || profile.name.toLowerCase().includes(generalQueryValue)) {
+                    facultyRowsCounter++;
+                    let payrollRunningPaidSumAccumulator = 0;
+                    let rowHtmlMarkup = `<tr><td class="sticky-col-id" style="background:#f8fafc; font-weight:bold;">${id}</td><td class="sticky-col-name" style="left:80px; font-weight:600; color:var(--purple-dark);">${profile.name}</td>`;
+                    
+                    pay_columnsRegistryStructureConfigNodes.forEach(col => {
+                        const componentPayrollRecord = profile.balances[col.key];
+                        let cellStyleClassTag = "no-record", innerRenderDisplayValueText = "";
+                        if (componentPayrollRecord && componentPayrollRecord.paid > 0) {
+                            innerRenderDisplayValueText = "₹" + componentPayrollRecord.paid;
+                            payrollRunningPaidSumAccumulator += componentPayrollRecord.paid;
+                            cellStyleClassTag = (componentPayrollRecord.paid >= componentPayrollRecord.assigned) ? "fee-full" : "fee-partial";
+                        }
+                        rowHtmlMarkup += `<td><span class="fee-amt-tag ${cellStyleClassTag}">${innerRenderDisplayValueText}</span></td>`;
+                    });
+                    rowHtmlMarkup += `<td class="total-sticky-col" style="color:var(--purple-dark);">₹${payrollRunningPaidSumAccumulator}</td></tr>`;
+                    targetGridBody.innerHTML += rowHtmlMarkup;
+                }
+            }
+
+            if(facultyRowsCounter === 0) {
+                targetGridBody.innerHTML = `<tr><td colspan="${pay_columnsRegistryStructureConfigNodes.length + 3}" style="padding: 20px; color: var(--secondary);">No HR disbursals archived.</td></tr>`;
+            }
+
+            let computedDailyPayrollCashSum = 0;
+            pay_transactionRegistryLogPipeline.forEach(tx => { if (tx.date === globalSystemDatabaseStateDate) computedDailyPayrollCashSum += tx.amount; });
+            document.getElementById('pay_metricDailyPayout').innerText = "₹" + computedDailyPayrollCashSum;
+
+            let totalYearlyPayoutSum = pay_transactionRegistryLogPipeline.reduce((acc, curr) => acc + curr.amount, 0);
+            document.getElementById('pay_metricYearlyAggregatePayout').innerText = "₹" + totalYearlyPayoutSum;
+        }
+
+        function processTeacherPayrollTransactionEntry(eventSubmitObj) {
+            eventSubmitObj.preventDefault();
+            const targetTeacherId = document.getElementById('pay_teacherId').value.trim().toUpperCase();
+            const txSelectedDateString = document.getElementById('pay_txDate').value;
+            const flagGeneratePayslipInstantly = document.getElementById('pay_autoGeneratePayslipPrintToggle').checked;
+
+            if(!pay_teacherDirectoryDatabaseMappingBook[targetTeacherId]) {
+                alert("Corporate Teacher Identifier node mapping missing from registry."); return;
+            }
+
+            const formsAssignedInputsCollection = document.querySelectorAll('.pay_inner_input_assigned');
+            const formsPaidInputsCollection = document.querySelectorAll('.pay_inner_input_paid');
+            let incrementalTransactionLiquidCashSum = 0;
+
+            formsAssignedInputsCollection.forEach((assignedInputElement, arrayLoopIndex) => {
+                let targetNodeStorageKey = assignedInputElement.getAttribute('data-target-node-key');
+                let assignedNumericValue = parseFloat(assignedInputElement.value) || 0;
+                let paidNumericValue = parseFloat(formsPaidInputsCollection[arrayLoopIndex].value) || 0;
+
+                if (targetNodeStorageKey.startsWith('month_')) targetNodeStorageKey = targetNodeStorageKey.replace('month_', '');
+
+                pay_teacherDirectoryDatabaseMappingBook[targetTeacherId].balances[targetNodeStorageKey] = { assigned: assignedNumericValue, paid: paidNumericValue };
+                incrementalTransactionLiquidCashSum += paidNumericValue;
+            });
+
+            pay_transactionRegistryLogPipeline.push({ date: txSelectedDateString, amount: incrementalTransactionLiquidCashSum });
+            renderMasterPayrollSpreadsheetDashboardMatrix();
+            alert("Disbursal statement executed successfully.");
+
+            if (flagGeneratePayslipInstantly) launchDynamicPayrollPayslipModalInvoiceViewport(targetTeacherId, txSelectedDateString);
+        }
+
+        function launchDynamicPayrollPayslipModalInvoiceViewport(teacherIdKey, transactionDateString) {
+            const profileObj = pay_teacherDirectoryDatabaseMappingBook[teacherIdKey];
+            if (!profileObj) return;
+
+            document.getElementById('pay_lblSlipEmployeeId').innerText = teacherIdKey;
+            document.getElementById('pay_lblSlipEmployeeName').innerText = profileObj.name;
+            document.getElementById('pay_lblSlipTxDate').innerText = transactionDateString;
+
+            const tableInjectBody = document.getElementById('pay_innerSlipItemizedTableLoopInjectArea');
+            tableInjectBody.innerHTML = "";
+            let macroSumAssignedAccumulator = 0, macroSumPaidAccumulator = 0;
+
+            pay_columnsRegistryStructureConfigNodes.forEach(col => {
+                const subRecordNode = profileObj.balances[col.key];
+                if (subRecordNode && (subRecordNode.assigned > 0 || subRecordNode.paid > 0)) {
+                    macroSumAssignedAccumulator += subRecordNode.assigned; macroSumPaidAccumulator += subRecordNode.paid;
+                    tableInjectBody.innerHTML += `<tr><td style="text-align: center;"><strong>${col.label} Base Scale</strong></td><td style="text-align: center;">₹${subRecordNode.assigned}</td><td style="text-align: center; color:var(--success); font-weight:700;">₹${subRecordNode.paid}</td></tr>`;
+                }
+            });
+
+            document.getElementById('pay_lblSlipTotalAssigned').innerText = "₹" + macroSumAssignedAccumulator;
+            document.getElementById('pay_lblSlipTotalPaid').innerText = "₹" + macroSumPaidAccumulator;
+            document.getElementById('pay_lblSlipTotalArrears').innerText = "₹" + (macroSumAssignedAccumulator - macroSumPaidAccumulator);
+            document.getElementById('pay_payslipModalOverlayWindowPane').style.display = "flex";
+        }
+
+        function closePayrollPayslipModalWindowViewportOverlay() { document.getElementById('pay_payslipModalOverlayWindowPane').style.display = "none"; }
+        function clearFiltersOnPayrollEcosystemTab() { document.getElementById('pay_searchGeneralQuery').value = ""; renderMasterPayrollSpreadsheetDashboardMatrix(); }
+
+        /* --- MODULE 5: DAILY LESSON ACTIVITY TRACKER LOGS --- */
+        function populateTeacherActivityDropdownParamsSelectorsUIElements() {
+            const teacherSelect = document.getElementById('act_teacherSelect');
+            const subjectSelect = document.getElementById('act_subjectSelect');
+            teacherSelect.innerHTML = ""; subjectSelect.innerHTML = "";
+            
+            if(act_teachersSelectionParamDropdownList.length === 0) {
+                teacherSelect.innerHTML = `<option value="">-- No Teachers Available --</option>`;
+            } else {
+                act_teachersSelectionParamDropdownList.forEach(t => teacherSelect.innerHTML += `<option value="${t}">${t}</option>`);
+            }
+            act_subjectsSelectionParamDropdownList.forEach(s => subjectSelect.innerHTML += `<option value="${s}">${s}</option>`);
+        }
+
+        function renderTeacherActivityDashboardLogsDisplayMatrix() {
+            const targetTableBody = document.getElementById('act_liveTableLogsInjectTargetBody');
+            targetTableBody.innerHTML = "";
+            const filteringSearchKeyword = document.getElementById('act_searchKeywordInput').value.toLowerCase();
+
+            if(act_activityLogsCentralRegistryPipeline.length === 0) {
+                targetTableBody.innerHTML = `<tr><td colspan="5" style="padding: 20px; color: var(--secondary);">No classroom actions logged today.</td></tr>`;
+                return;
+            }
+
+            act_activityLogsCentralRegistryPipeline.forEach(log => {
+                if (log.name.toLowerCase().includes(filteringSearchKeyword) || log.class.toLowerCase().includes(filteringSearchKeyword) || log.subject.toLowerCase().includes(filteringSearchKeyword) || log.activity.toLowerCase().includes(filteringSearchKeyword)) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `<td><strong>${log.name}</strong></td><td><span class="status-pill-box" style="background:#f1f5f9; color:var(--dark-panel); font-size:11px;">${log.class}</span></td><td><span style="color:#0284c7; font-weight:700;">${log.subject}</span></td><td style="font-family:monospace; font-size:12px;">${log.date}</td><td style="white-space:normal; font-size:13px; line-height:1.4; text-align: left;">${log.activity}</td>`;
+                    targetTableBody.appendChild(tr);
+                }
+            });
+        }
+
+        function executeLogActivityFormSubmissionPipeline(submitEventObj) {
+            submitEventObj.preventDefault();
+            const tVal = document.getElementById('act_teacherSelect').value;
+            if(!tVal) { alert("Please onboard a teacher before creating structural logs."); return; }
+
+            act_activityLogsCentralRegistryPipeline.push({
+                name: tVal, class: document.getElementById('act_classSelect').value,
+                subject: document.getElementById('act_subjectSelect').value, date: document.getElementById('act_logDate').value,
+                activity: document.getElementById('act_activityDetails').value.trim()
+            });
+            document.getElementById('act_activityDetails').value = "";
+            renderTeacherActivityDashboardLogsDisplayMatrix();
+            alert("Curriculum Activity Execution Log committed successfully.");
+        }
+        function clearActivityDashboardSearchFilters() { document.getElementById('act_searchKeywordInput').value = ""; renderTeacherActivityDashboardLogsDisplayMatrix(); }
+
+        /* --- MODULE 6: SYLLABUS & MONTHLY TARGET ROUTERS --- */
+        function loadTargetMonthPlanMemoryRouter() {
+            const targetClass = document.getElementById('syl_inputClass').value;
+            const targetSubject = document.getElementById('syl_inputSubject').value.trim();
+            const targetMonth = document.getElementById('syl_targetMonth').value;
+
+            if (!targetClass || !targetSubject) return;
+
+            let match = syllabusCentralMatrixRegistry.find(s => s.classKey === targetClass && s.subjectKey.toLowerCase() === targetSubject.toLowerCase());
+            if (match) {
+                document.getElementById('syl_inputTeacher').value = match.teacherName || "";
+                document.getElementById('syl_wholeSyllabusOverview').value = match.wholeSyllabus || "";
+                if (match.monthlyPlans && match.monthlyPlans[targetMonth]) {
+                    document.getElementById('syl_inputProgress').value = match.monthlyPlans[targetMonth].progress || 0;
+                    document.getElementById('syl_inputActualCompleted').value = match.monthlyPlans[targetMonth].actualCompleted || 0;
+                    document.getElementById('syl_syllabusDetails').value = match.monthlyPlans[targetMonth].details || "";
+                } else {
+                    document.getElementById('syl_inputProgress').value = 0; document.getElementById('syl_inputActualCompleted').value = 0; document.getElementById('syl_syllabusDetails').value = "";
+                }
+            } else {
+                document.getElementById('syl_inputProgress').value = 0; document.getElementById('syl_inputActualCompleted').value = 0; document.getElementById('syl_syllabusDetails').value = "";
+            }
+        }
+
+        function handleSyllabusFormSubmit(eventObj) {
+            eventObj.preventDefault();
+            const cls = document.getElementById('syl_inputClass').value;
+            const sub = document.getElementById('syl_inputSubject').value.trim();
+            const tch = document.getElementById('syl_inputTeacher').value.trim();
+            const month = document.getElementById('syl_targetMonth').value;
+            const prog = parseInt(document.getElementById('syl_inputProgress').value) || 0;
+            const actComp = parseInt(document.getElementById('syl_inputActualCompleted').value) || 0;
+            const wholeSyl = document.getElementById('syl_wholeSyllabusOverview').value.trim();
+            const det = document.getElementById('syl_syllabusDetails').value.trim();
+
+            let matchedCourse = syllabusCentralMatrixRegistry.find(s => s.classKey === cls && s.subjectKey.toLowerCase() === sub.toLowerCase());
+
+            if (matchedCourse) {
+                matchedCourse.teacherName = tch; matchedCourse.wholeSyllabus = wholeSyl;
+                if (!matchedCourse.monthlyPlans) matchedCourse.monthlyPlans = {};
+                matchedCourse.monthlyPlans[month] = { progress: prog, actualCompleted: actComp, details: det };
+            } else {
+                let newRecord = { classKey: cls, subjectKey: sub, teacherName: tch, wholeSyllabus: wholeSyl, monthlyPlans: {} };
+                newRecord.monthlyPlans[month] = { progress: prog, actualCompleted: actComp, details: det };
+                syllabusCentralMatrixRegistry.push(newRecord);
+            }
+            executeSyllabusUIStateRender();
+            alert(`Syllabus framework metrics updated securely.`);
+        }
+
+        function executeSyllabusUIStateRender() {
+            const macroSelectionKey = document.getElementById('syl_macroClassMapSelector').value;
+            const viewportFrame = document.getElementById('syl_dashboardViewportFrame');
+            const searchVal = document.getElementById('syl_searchKeyword').value.toLowerCase();
+
+            let filteredSet = syllabusCentralMatrixRegistry.filter(s => 
+                (macroSelectionKey === "ALL" || s.classKey === macroSelectionKey) &&
+                (s.subjectKey.toLowerCase().includes(searchVal) || s.teacherName.toLowerCase().includes(searchVal) || s.wholeSyllabus.toLowerCase().includes(searchVal))
+            );
+
+            if (filteredSet.length === 0) {
+                viewportFrame.innerHTML = `<div style="text-align:center; padding:40px; background:white; border-radius:8px; border:1px solid var(--border)">No active monthly curriculum outlines found. Select variables to assign milestones.</div>`;
+                return;
+            }
+
+            let macroGridHtml = `<div class="macro-grid-view">`;
+            filteredSet.forEach(item => {
+                let monthlyTimelineMarkup = "";
+                let monthsArray = ["April", "May", "June", "July", "August", "September", "October", "November", "December", "January", "February", "March"];
+                
+                monthsArray.forEach(m => {
+                    if (item.monthlyPlans && item.monthlyPlans[m]) {
+                        monthlyTimelineMarkup += `
+                            <div class="timeline-node" style="text-align: center;">
+                                <strong style="color:var(--primary);">${m}:</strong> 
+                                <span class="status-pill status-progress" style="font-size:10px; padding:2px 6px;">${item.monthlyPlans[m].progress}% Target</span>
+                                <span class="status-pill status-complete" style="font-size:10px; padding:2px 6px; margin-left:4px;">${item.monthlyPlans[m].actualCompleted}% Complete</span>
+                                <p style="margin-top:4px; font-size:12px; color:#475569; padding-left:4px; border-left:1px solid var(--border); text-align: center;">${item.monthlyPlans[m].details}</p>
+                            </div>
+                        `;
+                    }
+                });
+
+                macroGridHtml += `
+                    <div class="macro-card" style="background: white; text-align: center;">
+                        <h4><span>📚 ${item.subjectKey}</span> <span class="status-pill status-complete" style="font-size:11px;">${item.classKey}</span></h4>
+                        <div class="macro-meta">Faculty Anchor: <strong>${item.teacherName}</strong></div>
+                        <div class="syllabus-block-heading">Yearly Structural Curriculum Map:</div>
+                        <div class="syllabus-text" style="background:#fff; border:1px solid var(--border); padding:8px; border-radius:4px; max-height:100px; overflow-y:auto; text-align: center;">${item.wholeSyllabus || '[Pending Framework Allocation]'}</div>
+                        <div class="syllabus-block-heading" style="border-top:1px dashed #e2e8f0; padding-top:8px; margin-top:12px; color: var(--amber-dark);">Active Month Schedules:</div>
+                        <div class="timeline-container" style="border: none; padding: 0;">${monthlyTimelineMarkup || '<p class="placeholder-text">[Timeline Empty]</p>'}</div>
+                    </div>
+                `;
+            });
+            viewportFrame.innerHTML = macroGridHtml + `</div>`;
+            syncSyllabusControlSelectorsWorkingState();
+        }
+
+        function syncSyllabusControlSelectorsWorkingState() {
+            const teacherDropdown = document.getElementById('syl_teacherPrintSelector');
+            let activeTeacherSelected = teacherDropdown.value;
+            let distinctTeachers = [...new Set(syllabusCentralMatrixRegistry.map(item => item.teacherName.trim()))];
+            teacherDropdown.innerHTML = "";
+            
+            if(distinctTeachers.length === 0) {
+                teacherDropdown.innerHTML = `<option value="">-- No Anchor Map Loaded --</option>`; return;
+            }
+            distinctTeachers.forEach(tName => { teacherDropdown.innerHTML += `<option value="${tName}">${tName}</option>`; });
+            if (distinctTeachers.includes(activeTeacherSelected)) teacherDropdown.value = activeTeacherSelected;
+        }
+
+        function compileSyllabusDossierReport(exportModeTypeString) {
+            const printPaneViewport = document.getElementById('printTargetAreaViewport');
+            let targetedFilteredCollection = [];
+            let headerMetaTitleString = "", scopeLabelString = "";
+
+            if (exportModeTypeString === 'TEACHER') {
+                const targetTeacher = document.getElementById('syl_teacherPrintSelector').value;
+                if(!targetTeacher) { alert("No valid anchor node mapping targeted."); return; }
+                targetedFilteredCollection = syllabusCentralMatrixRegistry.filter(s => s.teacherName.trim().toLowerCase() === targetTeacher.trim().toLowerCase());
+                headerMetaTitleString = "FACULTY WORKLOAD PORTFOLIO DOSSIER";
+                scopeLabelString = `Faculty Teacher Name: <span>${targetTeacher}</span>`;
+            } else {
+                const targetClass = document.getElementById('syl_classPrintSelector').value;
+                targetedFilteredCollection = syllabusCentralMatrixRegistry.filter(s => s.classKey === targetClass);
+                headerMetaTitleString = "ARTICLE MASTER CLASS CURRICULUM BLUEPRINT";
+                scopeLabelString = `Academic Standard Target: <span>${targetClass}</span>`;
+            }
+
+            if(targetedFilteredCollection.length === 0) { alert("Zero matching timeline segments locked inside database array."); return; }
+
+            let docMarkup = `<div style="text-align:center; padding-bottom:15px; border-bottom:3px double var(--dark-panel);"><h2>BR International School</h2><h3>${headerMetaTitleString}</h3></div><p style="text-align: center; margin-top:10px;">${scopeLabelString}</p>`;
+            targetedFilteredCollection.forEach(course => {
+                docMarkup += `<div style="text-align: center; margin-top: 15px;"><strong>Subject: ${course.subjectKey}</strong><br>Outline Matrix Framework:<br>${course.wholeSyllabus || 'Pending'}</div>`;
+            });
+
+            printPaneViewport.innerHTML = docMarkup;
+            document.getElementById('syl_curriculumModalOverlayWindowPane').style.display = "flex";
+        }
+
+        function closeSyllabusCurriculumModalWindowOverlay() { document.getElementById('syl_curriculumModalOverlayWindowPane').style.display = "none"; }
+        function resetSyllabusDashboardViewFilters() { document.getElementById('syl_searchKeyword').value = ""; document.getElementById('syl_macroClassMapSelector').value = "ALL"; executeSyllabusUIStateRender(); }
+        function executeSystemPrintJobOnActiveModalView() { window.print(); }
+        function addNewAccountColumnNodeToFeeMatrixRegistry() { alert("Use dynamic headers settings dashboard vectors to implement additional custom table keys structures."); }
+
+        /* --- SETUP ARCHITECTURE SYSTEM BOOTSTRAPPING HOOKS --- */
+        window.onload = function() {
+            document.getElementById('globalMasterSystemClock').value = globalSystemDatabaseStateDate;
+            document.getElementById('att_targetExecutionDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('att_teacherExecutionDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('fee_txDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('pay_txDate').value = globalSystemDatabaseStateDate;
+            document.getElementById('act_logDate').value = globalSystemDatabaseStateDate;
+
+            renderMasterStudentDirectorySpreadsheetGrid();
+            renderTeacherDirectorySpreadsheetGrid();
+            updateFeeTabComponentDropdownOptionsUIElement();
+            renderTableHeaderStructureOnFeeMasterSpreadsheetGrid();
+            renderMasterFeeSpreadsheetDashboardMatrix();
+            executeSyllabusUIStateRender();
+        };
+    </script>
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-app.js";
+      import { getAnalytics } from "https://www.gstatic.com/firebasejs/9.23.0/firebase-analytics.js";
+
+      const firebaseConfig = {
+        apiKey: "AIzaSyD_wPv8I4nBxieuqWDAOaRligHscsylm_A",
+        authDomain: "school-management-databa-6912d.firebaseapp.com",
+        projectId: "school-management-databa-6912d",
+        storageBucket: "school-management-databa-6912d.firebasestorage.app",
+        messagingSenderId: "1091507582649",
+        appId: "1:1091507582649:web:2dad6ba16f8725cc750d68",
+        measurementId: "G-EBYG6RCDQK"
+      };
+
+      const app = initializeApp(firebaseConfig);
+      const analytics = getAnalytics(app);
+    </script>
+</body>
+</html>
